@@ -1,0 +1,22 @@
+{
+  "logger": {
+    "level": "info",
+    "file": "out.log"
+  },
+  "http": {
+    "host": "",
+    "port": ""
+  },
+  "grpc": {
+    "host": "0.0.0.0",
+    "port": "50051"
+  },
+  "sql": true,
+  "db": {
+    "host": "127.0.0.1",
+    "port": "5432",
+    "user": "test_user",
+    "password": "test_password",
+    "database": "test_database"
+  }
+}

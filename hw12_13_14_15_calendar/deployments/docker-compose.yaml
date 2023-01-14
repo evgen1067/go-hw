@@ -1,0 +1,56 @@
+version: '3.8'
+
+volumes:
+  postgres: ~
+
+services:
+  calendar:
+    container_name: ${APP_NAME}_calendar
+    build:
+      context: ..
+      dockerfile: ./build/web/Dockerfile
+    restart: on-failure
+    networks:
+      - new
+    ports:
+      - "8000:8000"
+      - "50051:50051"
+    command: --config /configs/config.json
+    volumes:
+      - "../configs:/configs"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:alpine
+    container_name: ${APP_NAME}_postgres
+    networks:
+      new:
+        aliases:
+          - database
+    environment:
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DB}
+    ports:
+      - "${PG_PORT}:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    restart: on-failure
+
+  migrate:
+    image: migrate/migrate
+    container_name: ${APP_NAME}_migrate
+    networks:
+      - new
+    volumes:
+      - "../migrations:/migrations"
+    command: [ "-path", "/migrations", "-database",  "postgres://go_user:go_password@database:5432/events_db?sslmode=disable", "up" ]
+    links:
+      - postgres
+
+networks:
+  new:
+
+
+

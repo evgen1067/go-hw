@@ -1,0 +1,22 @@
+{
+  "logger": {
+    "level": "info",
+    "file": "out.log"
+  },
+  "http": {
+    "host": "0.0.0.0",
+    "port": "8000"
+  },
+  "grpc": {
+    "host": "0.0.0.0",
+    "port": "50051"
+  },
+  "sql": true,
+  "db": {
+    "host": "postgres",
+    "port": "5432",
+    "user": "go_user",
+    "password": "go_password",
+    "database": "events_db"
+  }
+}
