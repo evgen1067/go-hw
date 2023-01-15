@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/rabbit"
-	"github.com/rabbitmq/amqp091-go"
+	"github.com/streadway/amqp"
 )
 
 type Producer struct {
@@ -17,12 +17,12 @@ func NewProducer(uri, queue string) *Producer {
 }
 
 func (p *Producer) Publish(ctx context.Context, body []byte) (err error) {
-	err = p.Chan.PublishWithContext(ctx,
+	err = p.Chan.Publish(
 		"",      // exchange
 		p.Queue, // routing key
 		false,   // mandatory
 		false,   // immediate
-		amqp091.Publishing{
+		amqp.Publishing{
 			ContentType: "application/json",
 			Body:        body,
 		})

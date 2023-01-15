@@ -11,7 +11,7 @@
     "host": "0.0.0.0",
     "port": "4001"
   },
-  "sql": false,
+  "sql": true,
   "db": {
     "host": "0.0.0.0",
     "port": "6000",
@@ -21,7 +21,7 @@
     "SSLMode": false
   },
   "amqp": {
-    "uri": "amqp://guest:guest@rabbit:5672",
+    "uri": "amqp://guest:guest@localhost:5672/",
     "queue": "calendar"
   }
 }

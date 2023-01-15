@@ -34,7 +34,7 @@ func main() {
 	logger.Logger.Info("The scheduler has started working")
 	defer logger.Logger.Info("The scheduler has finished its work")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	repo := psql.NewRepo()
@@ -66,12 +66,14 @@ func main() {
 }
 
 func work(ctx context.Context, repo repository.DatabaseRepo, prod *producer.Producer) {
+	ticker := time.NewTicker(1 * time.Minute)
 	for {
-		err := repo.ClearOldEvents(ctx)
+		err := repo.ClearOldEvents(ctx) // точно работает
+		logger.Logger.Info("test")
 		if err != nil {
 			logger.Logger.Error("Error when clearing old events: " + err.Error())
 		}
-		notices, err := repo.SchedulerList(ctx)
+		notices, err := repo.SchedulerList(ctx) // это тоже по идее должна работать
 		if err != nil {
 			logger.Logger.Error("Error when receiving notifications from the database: " + err.Error())
 		}
@@ -86,8 +88,8 @@ func work(ctx context.Context, repo repository.DatabaseRepo, prod *producer.Prod
 			}
 		}
 		select {
-		// TODO придумать что-то для "continue"
-		default:
+		case <-ticker.C:
+			continue
 		case <-ctx.Done():
 			return
 		}

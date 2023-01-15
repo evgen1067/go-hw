@@ -213,7 +213,7 @@ func (r *Repo) SchedulerList(ctx context.Context) ([]repository.Notice, error) {
 	query := `SELECT id, title, date_start, owner_id
 				FROM events
 				WHERE date_start > (now() - notify_in * interval '1 hour')
-				  AND date_start < (now() + notify_in * interval '1 hour')`
+				  AND date_start <= (now() + notify_in * interval '1 hour')`
 
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {

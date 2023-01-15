@@ -2,15 +2,14 @@ package rabbit
 
 import (
 	"fmt"
-
-	"github.com/rabbitmq/amqp091-go"
+	"github.com/streadway/amqp"
 )
 
 type RMQ struct {
 	uri   string
 	Queue string
-	Conn  *amqp091.Connection
-	Chan  *amqp091.Channel
+	Conn  *amqp.Connection
+	Chan  *amqp.Channel
 }
 
 func InitRabbitMQ(uri, queue string) *RMQ {
@@ -22,7 +21,7 @@ func InitRabbitMQ(uri, queue string) *RMQ {
 
 func (r *RMQ) Start() error {
 	var err error
-	r.Conn, err = amqp091.Dial(r.uri) // Создаем подключение к RabbitMQ
+	r.Conn, err = amqp.Dial(r.uri) // Создаем подключение к RabbitMQ
 	if err != nil {
 		return fmt.Errorf("unable to open connect to RabbitMQ server. Error: %s", err)
 	}

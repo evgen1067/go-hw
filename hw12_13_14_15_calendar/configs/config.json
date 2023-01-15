@@ -21,7 +21,7 @@
     "SSLMode": false
   },
   "amqp": {
-    "uri": "amqp://guest:guest@rabbit:5672",
+    "uri": "amqp://guest:guest@localhost:5672/",
     "queue": "calendar"
   }
 }

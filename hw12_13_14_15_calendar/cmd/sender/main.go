@@ -8,17 +8,16 @@ import (
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/rabbit/consumer"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
-	"github.com/rabbitmq/amqp091-go"
+	"github.com/streadway/amqp"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 )
 
 var (
 	configFile string
-	messages   <-chan amqp091.Delivery
+	messages   <-chan amqp.Delivery
 )
 
 func init() {
@@ -50,7 +49,7 @@ func main() {
 		logger.Logger.Error(err.Error())
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	go work(ctx)

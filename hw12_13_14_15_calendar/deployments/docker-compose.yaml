@@ -21,31 +21,31 @@ services:
     depends_on:
       - postgres
 
-  scheduler:
-    container_name: ${APP_NAME}_scheduler
-    build:
-      context: ..
-      dockerfile: ./build/scheduler/Dockerfile
-    restart: on-failure
-    command: --config /configs/config.json
-    volumes:
-      - "../configs:/configs"
-    depends_on:
-      - postgres
-      - rabbit
-
-  sender:
-    container_name: ${APP_NAME}_sender
-    build:
-      context: ..
-      dockerfile: ./build/sender/Dockerfile
-    restart: on-failure
-    command: --config /configs/config.json
-    volumes:
-      - "../configs:/configs"
-    depends_on:
-      - postgres
-      - rabbit
+#  scheduler:
+#    container_name: ${APP_NAME}_scheduler
+#    build:
+#      context: ..
+#      dockerfile: ./build/scheduler/Dockerfile
+#    restart: on-failure
+#    command: --config /configs/config.json
+#    volumes:
+#      - "../configs:/configs"
+#    depends_on:
+#      - postgres
+#      - rabbit
+#
+#  sender:
+#    container_name: ${APP_NAME}_sender
+#    build:
+#      context: ..
+#      dockerfile: ./build/sender/Dockerfile
+#    restart: on-failure
+#    command: --config /configs/config.json
+#    volumes:
+#      - "../configs:/configs"
+#    depends_on:
+#      - postgres
+#      - rabbit
 
   postgres:
     image: postgres:alpine
