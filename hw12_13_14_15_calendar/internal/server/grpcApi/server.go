@@ -58,6 +58,7 @@ func LoggerInterceptor(ctx context.Context,
 	req interface{},
 	info *grpc.UnaryServerInfo,
 	handler grpc.UnaryHandler) (interface{}, error) {
+	// TODO доделать логгер и тесты
 	start := time.Now()
 	// Calls the handler
 	h, err := handler(ctx, req)

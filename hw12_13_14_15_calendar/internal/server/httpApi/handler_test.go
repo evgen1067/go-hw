@@ -151,7 +151,18 @@ func TestCreateEvent(t *testing.T) {
 
 func TestUpdateEvent(t *testing.T) {
 	t.Run("successful update event", func(t *testing.T) {
-		id, err := CreateEventInRepo()
+		repo := memory.NewRepo()
+		ctx := context.Background()
+		InitHTTP(ctx, repo, config.Configuration)
+		event := repository.Event{
+			Title:       "Title",
+			Description: "Desc",
+			DateStart:   time.Now(),
+			DateEnd:     time.Now().AddDate(0, 0, 1),
+			NotifyIn:    1,
+			OwnerID:     1,
+		}
+		id, err := repo.Create(ctx, event)
 		require.NoError(t, err)
 
 		eventNew := repository.Event{

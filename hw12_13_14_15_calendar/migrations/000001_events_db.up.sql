@@ -9,3 +9,4 @@ CREATE TABLE IF NOT EXISTS events
     notify_in   int          NOT NULL,
     CONSTRAINT events_pk PRIMARY KEY (id)
 );
+CREATE INDEX owner_start_time_idx ON events USING btree (owner_id, date_start);
