@@ -4,7 +4,6 @@ package config
 
 import (
 	json "encoding/json"
-
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
@@ -47,6 +46,8 @@ func easyjson6615c02eDecodeGithubComEvgen1067Hw12131415CalendarInternalConfig(in
 			out.SQL = bool(in.Bool())
 		case "db":
 			easyjson6615c02eDecode2(in, &out.DB)
+		case "amqp":
+			easyjson6615c02eDecode3(in, &out.AMQP)
 		default:
 			in.SkipRecursive()
 		}
@@ -86,6 +87,11 @@ func easyjson6615c02eEncodeGithubComEvgen1067Hw12131415CalendarInternalConfig(ou
 		out.RawString(prefix)
 		easyjson6615c02eEncode2(out, in.DB)
 	}
+	{
+		const prefix string = ",\"amqp\":"
+		out.RawString(prefix)
+		easyjson6615c02eEncode3(out, in.AMQP)
+	}
 	out.RawByte('}')
 }
 
@@ -112,12 +118,68 @@ func (v *Config) UnmarshalJSON(data []byte) error {
 func (v *Config) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson6615c02eDecodeGithubComEvgen1067Hw12131415CalendarInternalConfig(l, v)
 }
+func easyjson6615c02eDecode3(in *jlexer.Lexer, out *struct {
+	Uri   string `json:"uri"`
+	Queue string `json:"queue"`
+}) {
+	isTopLevel := in.IsStart()
+	if in.IsNull() {
+		if isTopLevel {
+			in.Consumed()
+		}
+		in.Skip()
+		return
+	}
+	in.Delim('{')
+	for !in.IsDelim('}') {
+		key := in.UnsafeFieldName(false)
+		in.WantColon()
+		if in.IsNull() {
+			in.Skip()
+			in.WantComma()
+			continue
+		}
+		switch key {
+		case "uri":
+			out.Uri = string(in.String())
+		case "queue":
+			out.Queue = string(in.String())
+		default:
+			in.SkipRecursive()
+		}
+		in.WantComma()
+	}
+	in.Delim('}')
+	if isTopLevel {
+		in.Consumed()
+	}
+}
+func easyjson6615c02eEncode3(out *jwriter.Writer, in struct {
+	Uri   string `json:"uri"`
+	Queue string `json:"queue"`
+}) {
+	out.RawByte('{')
+	first := true
+	_ = first
+	{
+		const prefix string = ",\"uri\":"
+		out.RawString(prefix[1:])
+		out.String(string(in.Uri))
+	}
+	{
+		const prefix string = ",\"queue\":"
+		out.RawString(prefix)
+		out.String(string(in.Queue))
+	}
+	out.RawByte('}')
+}
 func easyjson6615c02eDecode2(in *jlexer.Lexer, out *struct {
 	Host     string `json:"host"`
 	Port     string `json:"port"`
 	User     string `json:"user"`
 	Password string `json:"password"`
 	Database string `json:"database"`
+	SSLMode  bool   `json:"SSLMode"`
 }) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
@@ -147,6 +209,8 @@ func easyjson6615c02eDecode2(in *jlexer.Lexer, out *struct {
 			out.Password = string(in.String())
 		case "database":
 			out.Database = string(in.String())
+		case "SSLMode":
+			out.SSLMode = bool(in.Bool())
 		default:
 			in.SkipRecursive()
 		}
@@ -163,6 +227,7 @@ func easyjson6615c02eEncode2(out *jwriter.Writer, in struct {
 	User     string `json:"user"`
 	Password string `json:"password"`
 	Database string `json:"database"`
+	SSLMode  bool   `json:"SSLMode"`
 }) {
 	out.RawByte('{')
 	first := true
@@ -191,6 +256,11 @@ func easyjson6615c02eEncode2(out *jwriter.Writer, in struct {
 		const prefix string = ",\"database\":"
 		out.RawString(prefix)
 		out.String(string(in.Database))
+	}
+	{
+		const prefix string = ",\"SSLMode\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.SSLMode))
 	}
 	out.RawByte('}')
 }

@@ -29,6 +29,8 @@ type Period string
 type DatabaseRepo interface {
 	Connect(ctx context.Context) error
 	Close() error
+	SchedulerList(ctx context.Context) ([]Notice, error)
+	ClearOldEvents(ctx context.Context) error
 	EventsRepo
 }
 

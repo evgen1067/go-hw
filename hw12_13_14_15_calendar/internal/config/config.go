@@ -33,7 +33,12 @@ type Config struct {
 		User     string `json:"user"`
 		Password string `json:"password"`
 		Database string `json:"database"`
+		SSLMode  bool   `json:"SSLMode"`
 	} `json:"db"`
+	AMQP struct {
+		Uri   string `json:"uri"`
+		Queue string `json:"queue"`
+	} `json:"amqp"`
 }
 
 var Configuration = &Config{}

@@ -35,12 +35,17 @@ func (r *Repo) Close() error {
 }
 
 func getDSN() string {
-	return fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=disable",
+	SSLMode := "disable"
+	if config.Configuration.DB.SSLMode {
+		SSLMode = "enable"
+	}
+	return fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=%v",
 		config.Configuration.DB.Host,
 		config.Configuration.DB.Port,
 		config.Configuration.DB.User,
 		config.Configuration.DB.Password,
-		config.Configuration.DB.Database)
+		config.Configuration.DB.Database,
+		SSLMode)
 }
 
 func (r *Repo) Create(ctx context.Context, event repository.Event) (repository.EventID, error) {
@@ -169,7 +174,7 @@ func (r *Repo) PeriodList(
 		}
 		events = append(events, event)
 	}
-	return events, nil
+	return events, rows.Err()
 }
 
 func (r *Repo) DayList(ctx context.Context, startDate time.Time) ([]repository.Event, error) {
@@ -185,4 +190,47 @@ func (r *Repo) WeekList(ctx context.Context, startDate time.Time) ([]repository.
 func (r *Repo) MonthList(ctx context.Context, startDate time.Time) ([]repository.Event, error) {
 	period := repository.Period("Month")
 	return r.PeriodList(ctx, startDate, period)
+}
+
+func (r *Repo) ClearOldEvents(ctx context.Context) error {
+	lastYearDate := time.Now().AddDate(-1, 0, 0)
+	query := `DELETE FROM events WHERE date_end < $1`
+
+	result, err := r.db.ExecContext(ctx, query, lastYearDate.Format("2006-01-02 15:04"))
+	if err != nil {
+		return err
+	}
+	_, err = result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *Repo) SchedulerList(ctx context.Context) ([]repository.Notice, error) {
+	var notices []repository.Notice
+	query := `SELECT id, title, date_start, owner_id
+				FROM events
+				WHERE date_start > (now() - notify_in * interval '1 hour')
+				  AND date_start < (now() + notify_in * interval '1 hour')`
+
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var notice repository.Notice
+		if err := rows.Scan(
+			&notice.EventID,
+			&notice.Title,
+			&notice.Datetime,
+			&notice.OwnerID,
+		); err != nil {
+			return nil, err
+		}
+		notices = append(notices, notice)
+	}
+	return notices, rows.Err()
 }

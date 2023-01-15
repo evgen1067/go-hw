@@ -17,6 +17,11 @@
     "port": "5432",
     "user": "go_user",
     "password": "go_password",
-    "database": "events_db"
+    "database": "events_db",
+    "SSLMode": false
+  },
+  "amqp": {
+    "uri": "amqp://guest:guest@rabbit:5672",
+    "queue": "calendar"
   }
 }

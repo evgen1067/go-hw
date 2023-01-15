@@ -53,20 +53,20 @@ func (app *App) Start() error {
 		if err != nil {
 			return err
 		}
-		logger.Logger.Info("Database started")
+		logger.Logger.Info("Database started.")
 		defer repo.Close()
 	}
 
 	errs := make(chan error)
 	go func() {
-		logger.Logger.Info("HTTP server started")
+		logger.Logger.Info("HTTP server started.")
 		err := app.http.Srv.ListenAndServe()
 		if err != nil {
 			errs <- err
 		}
 	}()
 	go func() {
-		logger.Logger.Info("GRPC server started")
+		logger.Logger.Info("GRPC server started.")
 		err := app.grpc.ListenAndServe()
 		if err != nil {
 			errs <- err
@@ -78,7 +78,7 @@ func (app *App) Start() error {
 		logger.Logger.Error(err.Error())
 		return err
 	case <-done:
-		logger.Logger.Info("Shutdown with Signal")
+		logger.Logger.Info("Shutdown with Signal.")
 	}
 
 	ctx, cancel := context.WithTimeout(app.ctx, 3*time.Second)
@@ -91,7 +91,7 @@ func (app *App) Start() error {
 		return err
 	}
 
-	logger.Logger.Info("Servers Exited Properly")
+	logger.Logger.Info("Servers Exited Properly.")
 
 	return nil
 }

@@ -8,18 +8,44 @@ services:
     container_name: ${APP_NAME}_calendar
     build:
       context: ..
-      dockerfile: ./build/web/Dockerfile
+      dockerfile: ./build/calendar/Dockerfile
     restart: on-failure
     networks:
       - new
     ports:
-      - "8000:8000"
+      - "8888:8888"
       - "50051:50051"
     command: --config /configs/config.json
     volumes:
       - "../configs:/configs"
     depends_on:
       - postgres
+
+  scheduler:
+    container_name: ${APP_NAME}_scheduler
+    build:
+      context: ..
+      dockerfile: ./build/scheduler/Dockerfile
+    restart: on-failure
+    command: --config /configs/config.json
+    volumes:
+      - "../configs:/configs"
+    depends_on:
+      - postgres
+      - rabbit
+
+  sender:
+    container_name: ${APP_NAME}_sender
+    build:
+      context: ..
+      dockerfile: ./build/sender/Dockerfile
+    restart: on-failure
+    command: --config /configs/config.json
+    volumes:
+      - "../configs:/configs"
+    depends_on:
+      - postgres
+      - rabbit
 
   postgres:
     image: postgres:alpine
@@ -32,11 +58,11 @@ services:
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: ${PG_DB}
+    restart: on-failure
     ports:
       - "${PG_PORT}:5432"
     volumes:
       - postgres:/var/lib/postgresql/data
-    restart: on-failure
 
   migrate:
     image: migrate/migrate
@@ -49,6 +75,12 @@ services:
     links:
       - postgres
 
+  rabbit:
+    container_name: ${APP_NAME}_rabbit
+    image: rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
 networks:
   new:
 

@@ -18,6 +18,9 @@ generate:
 up:
 	docker compose -f ./deployments/docker-compose.yaml up -d
 
+rebuild:
+	docker compose -f ./deployments/docker-compose.yaml up --build
+
 down:
 	docker compose -f ./deployments/docker-compose.yaml down --remove-orphans
 

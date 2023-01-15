@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/app/calendar"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
@@ -18,7 +19,7 @@ func main() {
 	flag.Parse()
 	err := logger.InitLogger()
 	if err != nil {
-		return
+		log.Fatalf("Error during logger initialization: %s", err)
 	}
 	_, err = config.InitConfig(configFile)
 	if err != nil {
