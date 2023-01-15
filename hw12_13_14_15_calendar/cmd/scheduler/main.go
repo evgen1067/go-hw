@@ -26,10 +26,12 @@ func main() {
 	err := logger.InitLogger()
 	if err != nil {
 		log.Fatalf("Error during logger initialization: %s", err.Error())
+		return
 	}
 	cfg, err := config.InitConfig(configFile)
 	if err != nil {
 		logger.Logger.Error("Error when reading the configuration file: " + err.Error())
+		return
 	}
 	logger.Logger.Info("The scheduler has started working")
 	defer logger.Logger.Info("The scheduler has finished its work")
@@ -46,6 +48,7 @@ func main() {
 	err = repo.Connect(ctx)
 	if err != nil {
 		logger.Logger.Error("Error when connecting to the database: " + err.Error())
+		return
 	}
 	logger.Logger.Info("Database started.")
 	defer repo.Close()
@@ -54,6 +57,7 @@ func main() {
 	err = prod.Start()
 	if err != nil {
 		logger.Logger.Error(err.Error())
+		return
 	}
 	defer prod.Stop()
 

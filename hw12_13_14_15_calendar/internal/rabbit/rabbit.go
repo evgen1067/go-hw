@@ -2,6 +2,7 @@ package rabbit
 
 import (
 	"fmt"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
 	"github.com/streadway/amqp"
 )
 
@@ -24,6 +25,9 @@ func (r *RMQ) Start() error {
 	r.Conn, err = amqp.Dial(r.uri) // Создаем подключение к RabbitMQ
 	if err != nil {
 		return fmt.Errorf("unable to open connect to RabbitMQ server. Error: %s", err)
+	}
+	if err == nil {
+		logger.Logger.Info("...connect to RabbitMQ server")
 	}
 	r.Chan, err = r.Conn.Channel()
 	if err != nil {

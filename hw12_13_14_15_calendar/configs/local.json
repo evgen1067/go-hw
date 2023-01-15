@@ -14,7 +14,7 @@
   "sql": true,
   "db": {
     "host": "0.0.0.0",
-    "port": "6000",
+    "port": "5432",
     "user": "go_user",
     "password": "go_password",
     "database": "events_db",
