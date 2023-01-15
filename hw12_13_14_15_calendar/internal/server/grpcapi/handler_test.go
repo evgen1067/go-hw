@@ -1,22 +1,22 @@
-package grpcApi
+package grpcapi
 
 import (
 	"context"
+	"log"
+	"net"
+	"testing"
+	"time"
+
 	"github.com/evgen1067/hw12_13_14_15_calendar/api"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository/memory"
-	data "github.com/evgen1067/hw12_13_14_15_calendar/internal/server/grpcApi/transformer"
+	data "github.com/evgen1067/hw12_13_14_15_calendar/internal/server/grpcapi/transformer"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
-	"log"
-	"net"
-	"testing"
-	"time"
 )
 
 func TestHandlers(t *testing.T) {
@@ -103,17 +103,14 @@ func TestHandlers(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, 9, len(list.Event))
 	})
-
 }
 
 func server(ctx context.Context) (api.EventServiceClient, func()) {
 	buffer := 101024 * 1024
 	lis := bufconn.Listen(buffer)
 
-	_ = logger.InitLogger()
 	cfg, _ := config.InitConfig("../../../configs/local.json")
-	var repo repository.EventsRepo
-	repo = memory.NewRepo()
+	repo := memory.NewRepo()
 	grpcSrv := InitGRPC(ctx, repo, cfg)
 
 	baseServer := grpc.NewServer()

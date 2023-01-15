@@ -1,14 +1,15 @@
-package httpApi
+package httpapi
 
 import (
 	"encoding/json"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/server/httpApi/common"
-	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/server/httpapi/common"
+	"github.com/gorilla/mux"
 )
 
 func CustomNotFoundHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +39,7 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var eventID repository.EventID
-	eventID, err = restApi.repo.Create(restApi.ctx, event)
+	eventID, err = restAPI.repo.Create(restAPI.ctx, event)
 	if err != nil {
 		WriteException(w, common.Exception{
 			Code:    http.StatusBadRequest,
@@ -71,7 +72,7 @@ func UpdateEvent(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	eventID, err = restApi.repo.Update(restApi.ctx, eventID, event)
+	eventID, err = restAPI.repo.Update(restAPI.ctx, eventID, event)
 	if err != nil {
 		WriteException(w, common.Exception{
 			Code:    http.StatusBadRequest,
@@ -95,7 +96,7 @@ func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	eventID := repository.EventID(id)
-	eventID, err = restApi.repo.Delete(restApi.ctx, eventID)
+	eventID, err = restAPI.repo.Delete(restAPI.ctx, eventID)
 	if err != nil {
 		WriteException(w, common.Exception{
 			Code:    http.StatusBadRequest,
@@ -145,11 +146,11 @@ func EventList(w http.ResponseWriter, r *http.Request) {
 	var events []repository.Event
 	switch period {
 	case "Day":
-		events, err = restApi.repo.DayList(restApi.ctx, startDate)
+		events, err = restAPI.repo.DayList(restAPI.ctx, startDate)
 	case "Week":
-		events, err = restApi.repo.WeekList(restApi.ctx, startDate)
+		events, err = restAPI.repo.WeekList(restAPI.ctx, startDate)
 	case "Month":
-		events, err = restApi.repo.MonthList(restApi.ctx, startDate)
+		events, err = restAPI.repo.MonthList(restAPI.ctx, startDate)
 	}
 	if err != nil {
 		WriteException(w, common.Exception{

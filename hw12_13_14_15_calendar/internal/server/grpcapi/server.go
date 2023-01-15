@@ -1,15 +1,16 @@
-package grpcApi
+package grpcapi
 
 import (
 	"context"
 	"fmt"
+	"net"
+	"time"
+
 	"github.com/evgen1067/hw12_13_14_15_calendar/api"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"google.golang.org/grpc"
-	"net"
-	"time"
 )
 
 type Deps struct {
@@ -57,13 +58,15 @@ func (s *Server) Stop() {
 func LoggerInterceptor(ctx context.Context,
 	req interface{},
 	info *grpc.UnaryServerInfo,
-	handler grpc.UnaryHandler) (interface{}, error) {
-	// TODO доделать логгер и тесты
+	handler grpc.UnaryHandler,
+) (interface{}, error) {
+	// TODO логгер вообще работает?
 	start := time.Now()
 	// Calls the handler
 	h, err := handler(ctx, req)
+
 	latency := time.Since(start).Nanoseconds()
-	message := fmt.Sprintf("%v %v ns", info.FullMethod, latency)
+	message := fmt.Sprintf("%v %v ns %v", info.FullMethod, latency, err)
 	logger.Logger.Info(message)
 	return h, err
 }

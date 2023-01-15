@@ -1,4 +1,4 @@
-package httpApi
+package httpapi
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var restApi *Server
+var restAPI *Server
 
 type Deps struct {
 	ctx  context.Context
@@ -41,7 +41,7 @@ func HTTPRouter() *mux.Router {
 }
 
 func InitHTTP(_ctx context.Context, _repo repository.EventsRepo, cfg *config.Config) *Server {
-	restApi = &Server{
+	restAPI = &Server{
 		Deps: Deps{
 			ctx:  _ctx,
 			repo: _repo,
@@ -52,5 +52,5 @@ func InitHTTP(_ctx context.Context, _repo repository.EventsRepo, cfg *config.Con
 			ReadHeaderTimeout: 1 * time.Second,
 		},
 	}
-	return restApi
+	return restAPI
 }

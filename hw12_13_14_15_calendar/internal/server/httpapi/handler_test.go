@@ -1,11 +1,10 @@
-package httpApi
+package httpapi
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -15,13 +14,16 @@ import (
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository/memory"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/server/httpApi/common"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/server/httpapi/common"
+	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
 )
 
+var ctx context.Context
+
 func CreateEventInRepo() (repository.EventID, error) {
 	repo := memory.NewRepo()
-	ctx := context.Background()
+	ctx = context.Background()
 	InitHTTP(ctx, repo, config.Configuration)
 	event := repository.Event{
 		Title:       "Title",
@@ -90,7 +92,7 @@ func TestCreateEvent(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		router := mux.NewRouter()
 		router.HandleFunc("/events/new", CreateEvent).Methods(http.MethodPost)
-		req, err := http.NewRequest(http.MethodPost, "/events/new", b)
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/events/new", b)
 		require.NoError(t, err)
 		router.ServeHTTP(recorder, req)
 		var resp common.ResponseEventID
@@ -134,7 +136,7 @@ func TestCreateEvent(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		router := mux.NewRouter()
 		router.HandleFunc("/events/new", CreateEvent).Methods(http.MethodPost)
-		req, err := http.NewRequest(http.MethodPost, "/events/new", b)
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "/events/new", b)
 		require.NoError(t, err)
 		router.ServeHTTP(recorder, req)
 		var resp common.ResponseEventID
@@ -180,7 +182,7 @@ func TestUpdateEvent(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		router := mux.NewRouter()
 		router.HandleFunc("/events/{id}", UpdateEvent).Methods(http.MethodPut)
-		req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/events/%d", id), b)
+		req, err := http.NewRequestWithContext(ctx, http.MethodPut, fmt.Sprintf("/events/%d", id), b)
 		require.NoError(t, err)
 		router.ServeHTTP(recorder, req)
 		var resp common.ResponseEventID
@@ -216,7 +218,7 @@ func TestUpdateEvent(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		router := mux.NewRouter()
 		router.HandleFunc("/events/{id}", UpdateEvent).Methods(http.MethodPut)
-		req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("/events/%d", id), b)
+		req, err := http.NewRequestWithContext(ctx, http.MethodPut, fmt.Sprintf("/events/%d", id), b)
 		require.NoError(t, err)
 		router.ServeHTTP(recorder, req)
 		var resp common.Exception
@@ -233,7 +235,7 @@ func TestDeleteEvent(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		router := mux.NewRouter()
 		router.HandleFunc("/events/{id}", DeleteEvent).Methods(http.MethodDelete)
-		req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/events/%d", id), nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodDelete, fmt.Sprintf("/events/%d", id), nil)
 		require.NoError(t, err)
 		router.ServeHTTP(recorder, req)
 		var resp common.ResponseEventID
@@ -247,7 +249,7 @@ func TestDeleteEvent(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		router := mux.NewRouter()
 		router.HandleFunc("/events/{id}", DeleteEvent).Methods(http.MethodDelete)
-		req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("/events/%d", id), nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodDelete, fmt.Sprintf("/events/%d", id), nil)
 		require.NoError(t, err)
 		router.ServeHTTP(recorder, req)
 		var resp common.Exception
@@ -264,7 +266,7 @@ func TestEventList(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		router := mux.NewRouter()
 		router.HandleFunc("/events/{period}", EventList).Methods(http.MethodGet)
-		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/events/%v", "fail"), nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("/events/%v", "fail"), nil)
 		require.NoError(t, err)
 		router.ServeHTTP(recorder, req)
 		var resp common.Exception
@@ -279,7 +281,7 @@ func TestEventList(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		router := mux.NewRouter()
 		router.HandleFunc("/events/{period}", EventList).Methods(http.MethodGet)
-		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/events/%v", "day"), nil)
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, fmt.Sprintf("/events/%v", "day"), nil)
 		require.NoError(t, err)
 		router.ServeHTTP(recorder, req)
 		var resp common.Exception
@@ -294,7 +296,7 @@ func TestEventList(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		router := mux.NewRouter()
 		router.HandleFunc("/events/{period}", EventList).Methods(http.MethodGet)
-		req, err := http.NewRequest(
+		req, err := http.NewRequestWithContext(ctx,
 			http.MethodGet,
 			fmt.Sprintf("/events/%v?%v", "day", "date=2001-12-18"),
 			nil)
@@ -311,7 +313,7 @@ func TestEventList(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		router := mux.NewRouter()
 		router.HandleFunc("/events/{period}", EventList).Methods(http.MethodGet)
-		req, err := http.NewRequest(
+		req, err := http.NewRequestWithContext(ctx,
 			http.MethodGet,
 			fmt.Sprintf("/events/%v?date=%v", "week",
 				time.Now().Add(-5*time.Second).Format("2006-01-02T15:04:05")), nil)

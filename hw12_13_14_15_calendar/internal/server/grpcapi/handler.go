@@ -1,23 +1,24 @@
-package grpcApi
+package grpcapi
 
 import (
 	"context"
+	"time"
+
 	"github.com/evgen1067/hw12_13_14_15_calendar/api"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
-	data "github.com/evgen1067/hw12_13_14_15_calendar/internal/server/grpcApi/transformer"
-	"time"
+	data "github.com/evgen1067/hw12_13_14_15_calendar/internal/server/grpcapi/transformer"
 )
 
 func (s *Server) Create(ctx context.Context, req *api.CreateRequest) (*api.CreateResponse, error) {
 	e := data.TransformPbToEvent(req.Event)
 
-	eId, err := s.repo.Create(ctx, e)
+	eID, err := s.repo.Create(ctx, e)
 	if err != nil {
 		return nil, err
 	}
 
 	return &api.CreateResponse{
-		Id: uint64(eId),
+		Id: uint64(eID),
 	}, nil
 }
 
@@ -25,26 +26,26 @@ func (s *Server) Update(ctx context.Context, req *api.UpdateRequest) (*api.Updat
 	id := repository.EventID(req.Id)
 	e := data.TransformPbToEvent(req.Event)
 
-	eId, err := s.repo.Update(ctx, id, e)
+	eID, err := s.repo.Update(ctx, id, e)
 	if err != nil {
 		return nil, err
 	}
 
 	return &api.UpdateResponse{
-		Id: uint64(eId),
+		Id: uint64(eID),
 	}, nil
 }
 
 func (s *Server) Delete(ctx context.Context, req *api.DeleteRequest) (*api.DeleteResponse, error) {
 	id := repository.EventID(req.Id)
 
-	eId, err := s.repo.Delete(ctx, id)
+	eID, err := s.repo.Delete(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
 	return &api.DeleteResponse{
-		Id: uint64(eId),
+		Id: uint64(eID),
 	}, nil
 }
 

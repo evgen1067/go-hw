@@ -2,7 +2,6 @@ package calendar
 
 import (
 	"context"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/server/grpcApi"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,7 +12,8 @@ import (
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository/memory"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository/psql"
-	httpApi "github.com/evgen1067/hw12_13_14_15_calendar/internal/server/httpApi"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/server/grpcapi"
+	httpApi "github.com/evgen1067/hw12_13_14_15_calendar/internal/server/httpapi"
 )
 
 type App struct {
@@ -21,12 +21,12 @@ type App struct {
 	config *config.Config
 	repo   repository.EventsRepo
 	http   *httpApi.Server
-	grpc   *grpcApi.Server
+	grpc   *grpcapi.Server
 }
 
 func InitApp() *App {
 	var repo repository.EventsRepo
-	var conf = config.Configuration
+	conf := config.Configuration
 	if conf.SQL {
 		repo = psql.NewRepo()
 	} else {
@@ -34,7 +34,7 @@ func InitApp() *App {
 	}
 	ctx := context.Background()
 	httpSrv := httpApi.InitHTTP(ctx, repo, conf)
-	grpcSrv := grpcApi.InitGRPC(ctx, repo, conf)
+	grpcSrv := grpcapi.InitGRPC(ctx, repo, conf)
 	return &App{
 		ctx:    ctx,
 		config: conf,

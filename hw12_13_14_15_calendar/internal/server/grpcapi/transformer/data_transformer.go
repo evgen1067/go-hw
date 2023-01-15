@@ -1,10 +1,11 @@
 package transformer
 
 import (
+	"time"
+
 	"github.com/evgen1067/hw12_13_14_15_calendar/api"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"github.com/golang/protobuf/ptypes/timestamp"
-	"time"
 )
 
 func TransformEventToPb(e repository.Event) *api.Event {
