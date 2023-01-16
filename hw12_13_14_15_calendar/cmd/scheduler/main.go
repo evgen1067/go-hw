@@ -26,12 +26,10 @@ func main() {
 	err := logger.InitLogger()
 	if err != nil {
 		log.Fatalf("Error during logger initialization: %s", err.Error())
-		return
 	}
 	cfg, err := config.InitConfig(configFile)
 	if err != nil {
 		logger.Logger.Error("Error when reading the configuration file: " + err.Error())
-		return
 	}
 	logger.Logger.Info("The scheduler has started working")
 	defer logger.Logger.Info("The scheduler has finished its work")
@@ -48,7 +46,6 @@ func main() {
 	err = repo.Connect(ctx)
 	if err != nil {
 		logger.Logger.Error("Error when connecting to the database: " + err.Error())
-		return
 	}
 	logger.Logger.Info("Database started.")
 	defer repo.Close()
@@ -57,7 +54,7 @@ func main() {
 	err = prod.Start()
 	if err != nil {
 		logger.Logger.Error(err.Error())
-		return
+		os.Exit(1)
 	}
 	defer prod.Stop()
 
@@ -70,14 +67,13 @@ func main() {
 }
 
 func work(ctx context.Context, repo repository.DatabaseRepo, prod *producer.Producer) {
-	ticker := time.NewTicker(1 * time.Minute)
+	ticker := time.NewTicker(5 * time.Minute)
 	for {
-		err := repo.ClearOldEvents(ctx) // точно работает
-		logger.Logger.Info("test")
+		err := repo.ClearOldEvents(ctx)
 		if err != nil {
 			logger.Logger.Error("Error when clearing old events: " + err.Error())
 		}
-		notices, err := repo.SchedulerList(ctx) // это тоже по идее должна работать
+		notices, err := repo.SchedulerList(ctx)
 		if err != nil {
 			logger.Logger.Error("Error when receiving notifications from the database: " + err.Error())
 		}

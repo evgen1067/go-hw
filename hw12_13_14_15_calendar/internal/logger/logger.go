@@ -47,6 +47,7 @@ func InitLogger() error {
 	for i := range file {
 		file[i] = filepath.Join(pathDir, file[i])
 	}
+	file = append(file, "stdout")
 
 	cfg := zap.Config{
 		Level:       level,

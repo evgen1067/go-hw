@@ -29,18 +29,16 @@ func main() {
 	err := logger.InitLogger()
 	if err != nil {
 		log.Fatalf("Error during logger initialization: %s", err)
-		return
 	}
 	cfg, err := config.InitConfig(configFile)
 	if err != nil {
 		logger.Logger.Error("Error when reading the configuration file: " + err.Error())
-		return
 	}
 	cons := consumer.NewConsumer(cfg.AMQP.Uri, cfg.AMQP.Queue)
 	err = cons.Start()
 	if err != nil {
 		logger.Logger.Error(err.Error())
-		return
+		os.Exit(1)
 	}
 	defer cons.Stop()
 

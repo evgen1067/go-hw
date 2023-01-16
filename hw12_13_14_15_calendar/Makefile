@@ -16,7 +16,7 @@ generate:
         api/EventService.proto
 
 up:
-	docker compose -f ./deployments/docker-compose.yaml up -d
+	docker compose -f ./deployments/docker-compose.yaml up
 
 rebuild:
 	docker compose -f ./deployments/docker-compose.yaml up --build

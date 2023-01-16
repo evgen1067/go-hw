@@ -20,17 +20,14 @@ func main() {
 	err := logger.InitLogger()
 	if err != nil {
 		log.Fatalf("Error during logger initialization: %s", err)
-		return
 	}
 	_, err = config.InitConfig(configFile)
 	if err != nil {
 		logger.Logger.Error("Error when reading the configuration file: " + err.Error())
-		return
 	}
 	app := calendar.InitApp()
 	err = app.Start()
 	if err != nil {
 		logger.Logger.Error("Error when launching the application: " + err.Error())
-		return
 	}
 }
