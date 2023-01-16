@@ -17,6 +17,7 @@
     "port": "5432",
     "user": "test_user",
     "password": "test_password",
-    "database": "test_database"
+    "database": "test_database",
+    "sslMode": false
   }
 }

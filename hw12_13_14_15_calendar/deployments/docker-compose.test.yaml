@@ -17,14 +17,14 @@ services:
     environment:
       POSTGRES_USER: ${PG_USER}
       POSTGRES_PASSWORD: ${PG_PASSWORD}
-      POSTGRES_DB: ${PG_DB}
+      POSTGRES_DB: ${PG_TEST_DB}
     ports:
       - "${PG_PORT}:5432"
     volumes:
       - postgres:/var/lib/postgresql/data
     restart: on-failure
     healthcheck:
-      test: [ "CMD", "pg_isready", "-q", "-d", "${PG_DB}", "-U", "${PG_USER}" ]
+      test: [ "CMD", "pg_isready", "-q", "-d", "${PG_TEST_DB}", "-U", "${PG_USER}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -37,7 +37,7 @@ services:
       - new
     volumes:
       - "../migrations:/migrations"
-    command: [ "-path", "/migrations", "-database",  "postgres://go_user:go_password@database:5432/events_db?sslmode=disable", "up" ]
+    command: [ "-path", "/migrations", "-database",  "postgres://go_user:go_password@database:5432/${PG_TEST_DB}?sslmode=disable", "up" ]
     links:
       - postgres
     depends_on:
@@ -53,7 +53,7 @@ services:
     ports:
       - "8888:8888"
       - "50051:50051"
-    command: --config /configs/config.json
+    command: --config /configs/test.json
     volumes:
       - "../configs:/configs"
     networks:
@@ -82,7 +82,7 @@ services:
       context: ..
       dockerfile: ./build/scheduler/Dockerfile
     restart: unless-stopped
-    command: --config /configs/config.json
+    command: --config /configs/test.json
     volumes:
       - "../configs:/configs"
     networks:
@@ -101,7 +101,7 @@ services:
       context: ..
       dockerfile: ./build/sender/Dockerfile
     restart: unless-stopped
-    command: --config /configs/config.json
+    command: --config /configs/test.json
     volumes:
       - "../configs:/configs"
     networks:

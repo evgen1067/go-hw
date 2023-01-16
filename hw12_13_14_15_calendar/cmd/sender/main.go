@@ -4,15 +4,16 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/rabbit/consumer"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"github.com/streadway/amqp"
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 var (
@@ -34,11 +35,11 @@ func main() {
 	if err != nil {
 		logger.Logger.Error("Error when reading the configuration file: " + err.Error())
 	}
-	cons := consumer.NewConsumer(cfg.AMQP.Uri, cfg.AMQP.Queue)
+	cons := consumer.NewConsumer(cfg.AMQP.URI, cfg.AMQP.Queue)
 	err = cons.Start()
 	if err != nil {
 		logger.Logger.Error(err.Error())
-		os.Exit(1)
+		return
 	}
 	defer cons.Stop()
 

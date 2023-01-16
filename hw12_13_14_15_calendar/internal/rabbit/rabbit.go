@@ -2,6 +2,7 @@ package rabbit
 
 import (
 	"fmt"
+
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
 	"github.com/streadway/amqp"
 )
@@ -24,14 +25,14 @@ func (r *RMQ) Start() error {
 	var err error
 	r.Conn, err = amqp.Dial(r.uri) // Создаем подключение к RabbitMQ
 	if err != nil {
-		return fmt.Errorf("unable to open connect to RabbitMQ server. Error: %s", err)
+		return fmt.Errorf("unable to open connect to RabbitMQ server. Error: %w", err)
 	}
 	if err == nil {
 		logger.Logger.Info("...connect to RabbitMQ server")
 	}
 	r.Chan, err = r.Conn.Channel()
 	if err != nil {
-		return fmt.Errorf("failed to open channel. Error: %s", err)
+		return fmt.Errorf("failed to open channel. Error: %w", err)
 	}
 
 	_, err = r.Chan.QueueDeclare(
@@ -43,7 +44,7 @@ func (r *RMQ) Start() error {
 		nil,     // arguments
 	)
 	if err != nil {
-		return fmt.Errorf("failed to declare a Queue. Error: %s", err)
+		return fmt.Errorf("failed to declare a Queue. Error: %w", err)
 	}
 
 	return nil

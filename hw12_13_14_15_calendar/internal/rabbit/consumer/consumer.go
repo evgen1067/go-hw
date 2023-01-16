@@ -2,7 +2,6 @@ package consumer
 
 import (
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/rabbit"
-
 	"github.com/streadway/amqp"
 )
 
@@ -15,13 +14,13 @@ func NewConsumer(uri, queue string) *Consumer {
 }
 
 func (c *Consumer) Consume() (<-chan amqp.Delivery, error) {
-	return c.Chan.Consume(
-		c.Queue, // queue
-		"",      // consumer
-		true,    // auto-ack
-		false,   // exclusive
-		false,   // no-local
-		false,   // no-wait
-		nil,     // args
+	return c.RMQ.Chan.Consume(
+		c.RMQ.Queue, // queue
+		"",          // consumer
+		true,        // auto-ack
+		false,       // exclusive
+		false,       // no-local
+		false,       // no-wait
+		nil,         // args
 	)
 }

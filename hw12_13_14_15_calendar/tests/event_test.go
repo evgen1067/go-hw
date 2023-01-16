@@ -3,11 +3,12 @@ package scripts
 import (
 	"bytes"
 	"fmt"
-	"github.com/cucumber/godog"
-	"github.com/cucumber/messages-go/v16"
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/cucumber/godog"
+	"github.com/cucumber/messages-go/v16"
 )
 
 type EventTest struct {
@@ -22,6 +23,13 @@ func (test *EventTest) iSendRequestTo(httpMethod, addr string) (err error) {
 	switch httpMethod {
 	case http.MethodDelete:
 		req, err := http.NewRequest(http.MethodDelete, addr, nil)
+		if err != nil {
+			return err
+		}
+		client := &http.Client{}
+		r, err = client.Do(req)
+	case http.MethodGet:
+		req, err := http.NewRequest(http.MethodGet, addr, nil)
 		if err != nil {
 			return err
 		}

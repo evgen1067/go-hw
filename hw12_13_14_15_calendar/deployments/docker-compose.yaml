@@ -37,7 +37,7 @@ services:
       - new
     volumes:
       - "../migrations:/migrations"
-    command: [ "-path", "/migrations", "-database",  "postgres://go_user:go_password@database:5432/events_db?sslmode=disable", "up" ]
+    command: [ "-path", "/migrations", "-database",  "postgres://go_user:go_password@database:5432/${PG_DB}?sslmode=disable", "up" ]
     links:
       - postgres
     depends_on:

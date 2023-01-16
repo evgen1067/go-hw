@@ -3,6 +3,7 @@ package producer
 import (
 	"context"
 	"fmt"
+
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/rabbit"
 	"github.com/streadway/amqp"
@@ -17,17 +18,17 @@ func NewProducer(uri, queue string) *Producer {
 }
 
 func (p *Producer) Publish(ctx context.Context, body []byte) (err error) {
-	err = p.Chan.Publish(
-		"",      // exchange
-		p.Queue, // routing key
-		false,   // mandatory
-		false,   // immediate
+	err = p.RMQ.Chan.Publish(
+		"",          // exchange
+		p.RMQ.Queue, // routing key
+		false,       // mandatory
+		false,       // immediate
 		amqp.Publishing{
 			ContentType: "application/json",
 			Body:        body,
 		})
 	if err != nil {
-		return fmt.Errorf("failed to publish a message. Error: %s", err)
+		return fmt.Errorf("failed to publish a message. Error: %w", err)
 	}
 	logger.Logger.Info(fmt.Sprintf("[x] Sent %s", body))
 	return nil

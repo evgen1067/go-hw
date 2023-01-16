@@ -119,7 +119,7 @@ func (v *Config) UnmarshalEasyJSON(l *jlexer.Lexer) {
 	easyjson6615c02eDecodeGithubComEvgen1067Hw12131415CalendarInternalConfig(l, v)
 }
 func easyjson6615c02eDecode3(in *jlexer.Lexer, out *struct {
-	Uri   string `json:"uri"`
+	URI   string `json:"uri"`
 	Queue string `json:"queue"`
 }) {
 	isTopLevel := in.IsStart()
@@ -141,7 +141,7 @@ func easyjson6615c02eDecode3(in *jlexer.Lexer, out *struct {
 		}
 		switch key {
 		case "uri":
-			out.Uri = string(in.String())
+			out.URI = string(in.String())
 		case "queue":
 			out.Queue = string(in.String())
 		default:
@@ -155,7 +155,7 @@ func easyjson6615c02eDecode3(in *jlexer.Lexer, out *struct {
 	}
 }
 func easyjson6615c02eEncode3(out *jwriter.Writer, in struct {
-	Uri   string `json:"uri"`
+	URI   string `json:"uri"`
 	Queue string `json:"queue"`
 }) {
 	out.RawByte('{')
@@ -164,7 +164,7 @@ func easyjson6615c02eEncode3(out *jwriter.Writer, in struct {
 	{
 		const prefix string = ",\"uri\":"
 		out.RawString(prefix[1:])
-		out.String(string(in.Uri))
+		out.String(string(in.URI))
 	}
 	{
 		const prefix string = ",\"queue\":"
@@ -179,7 +179,7 @@ func easyjson6615c02eDecode2(in *jlexer.Lexer, out *struct {
 	User     string `json:"user"`
 	Password string `json:"password"`
 	Database string `json:"database"`
-	SSLMode  bool   `json:"SSLMode"`
+	SSLMode  bool   `json:"sslMode"`
 }) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
@@ -209,7 +209,7 @@ func easyjson6615c02eDecode2(in *jlexer.Lexer, out *struct {
 			out.Password = string(in.String())
 		case "database":
 			out.Database = string(in.String())
-		case "SSLMode":
+		case "sslMode":
 			out.SSLMode = bool(in.Bool())
 		default:
 			in.SkipRecursive()
@@ -227,7 +227,7 @@ func easyjson6615c02eEncode2(out *jwriter.Writer, in struct {
 	User     string `json:"user"`
 	Password string `json:"password"`
 	Database string `json:"database"`
-	SSLMode  bool   `json:"SSLMode"`
+	SSLMode  bool   `json:"sslMode"`
 }) {
 	out.RawByte('{')
 	first := true
@@ -258,7 +258,7 @@ func easyjson6615c02eEncode2(out *jwriter.Writer, in struct {
 		out.String(string(in.Database))
 	}
 	{
-		const prefix string = ",\"SSLMode\":"
+		const prefix string = ",\"sslMode\":"
 		out.RawString(prefix)
 		out.Bool(bool(in.SSLMode))
 	}

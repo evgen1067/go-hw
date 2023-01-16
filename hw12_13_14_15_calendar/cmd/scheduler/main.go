@@ -3,16 +3,17 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/rabbit/producer"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository/psql"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/rabbit/producer"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository/psql"
 )
 
 var configFile string
@@ -39,10 +40,6 @@ func main() {
 
 	repo := psql.NewRepo()
 
-	repo, ok := repo.(repository.DatabaseRepo)
-	if !ok {
-		return
-	}
 	err = repo.Connect(ctx)
 	if err != nil {
 		logger.Logger.Error("Error when connecting to the database: " + err.Error())
@@ -50,11 +47,11 @@ func main() {
 	logger.Logger.Info("Database started.")
 	defer repo.Close()
 
-	prod := producer.NewProducer(cfg.AMQP.Uri, cfg.AMQP.Queue)
+	prod := producer.NewProducer(cfg.AMQP.URI, cfg.AMQP.Queue)
 	err = prod.Start()
 	if err != nil {
 		logger.Logger.Error(err.Error())
-		os.Exit(1)
+		return
 	}
 	defer prod.Stop()
 
