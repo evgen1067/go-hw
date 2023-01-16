@@ -15,7 +15,6 @@ func Unpack(s string) (string, error) {
 	backslash := false
 	// результат
 	resultString := ""
-	// число кол-в распаковки
 	var n int
 	for i, value := range str {
 		// если первый символ цифра
