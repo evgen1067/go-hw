@@ -2,9 +2,11 @@ package scripts
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"reflect"
 	"strings"
 
 	"github.com/cucumber/godog"
@@ -85,10 +87,31 @@ func (test *EventTest) theResponseCodeShouldBe(code int) (err error) {
 	return nil
 }
 
+func (test *EventTest) iReceiveData(data *messages.PickleDocString) (err error) {
+	var expected, actual interface{}
+
+	err = json.NewDecoder(strings.NewReader(data.Content)).Decode(&expected)
+	if err != nil {
+		return err
+	}
+
+	err = json.NewDecoder(test.r.Body).Decode(&actual)
+	if err != nil {
+		return err
+	}
+
+	if !reflect.DeepEqual(expected, actual) {
+		return fmt.Errorf("data is not valid, %v vs. %v", expected, actual)
+	}
+
+	return nil
+}
+
 func InitializeScenario(s *godog.ScenarioContext) {
 	test := new(EventTest)
 
 	s.Step(`^I send "([^"]*)" request to "([^"]*)"$`, test.iSendRequestTo)
 	s.Step(`^I send "([^"]*)" request to "([^"]*)" with "([^"]*)" data:$`, test.iSendRequestToWithData)
 	s.Step(`^The response code should be (\d+)$`, test.theResponseCodeShouldBe)
+	s.Step(`^I receive data:$`, test.iReceiveData)
 }

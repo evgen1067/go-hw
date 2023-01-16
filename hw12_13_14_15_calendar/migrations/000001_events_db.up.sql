@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS events
 CREATE UNIQUE INDEX owner_start_time_idx ON events USING btree (owner_id, date_start);
 INSERT INTO events (id, title, description, date_start, date_end, owner_id, notify_in) VALUES (
     999, 't', 'd', '2023-01-16T20:00:00Z', '2023-01-17T20:00:00Z', 1, 1
-    ), (1000, 't', 'd', '2023-01-16T20:00:00Z', '2023-01-17T20:00:00Z', 2, 1)
+    ), (1000, 't', 'd', '2023-01-16T20:00:00Z', '2023-01-17T20:00:00Z', 2, 1);

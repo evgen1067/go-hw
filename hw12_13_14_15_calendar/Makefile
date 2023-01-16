@@ -1,5 +1,7 @@
 build:
 	go build -o calendar cmd/calendar/main.go
+	go build -o scheduler cmd/scheduler/main.go
+	go build -o sender cmd/sender/main.go
 
 run:
 	go run cmd/calendar/main.go
