@@ -61,7 +61,7 @@ func TestHandlers(t *testing.T) {
 		Date: &timestamp.Timestamp{Seconds: dateStart.Unix(), Nanos: int32(dateStart.Nanosecond())},
 	}
 
-	t.Run("Test GRPC create, update, delete", func(t *testing.T) {
+	t.Run("Test GRPC create, 2-update.feature, delete", func(t *testing.T) {
 		create, err := client.Create(ctx, createRequest)
 		require.NoError(t, err)
 		require.Equal(t, 0, int(create.Id))

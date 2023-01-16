@@ -1,7 +1,7 @@
 package httpapi
 
 import (
-	"encoding/json"
+	"io"
 	"net/http"
 	"strconv"
 	"strings"
@@ -30,7 +30,15 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
 
 func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	var event repository.Event
-	err := json.NewDecoder(r.Body).Decode(&event)
+	bytes, err := io.ReadAll(r.Body)
+	if err != nil {
+		WriteException(w, common.Exception{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+		return
+	}
+	err = event.UnmarshalJSON(bytes)
 	if err != nil {
 		WriteException(w, common.Exception{
 			Code:    http.StatusBadRequest,
@@ -64,7 +72,15 @@ func UpdateEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var event repository.Event
-	err = json.NewDecoder(r.Body).Decode(&event)
+	bytes, err := io.ReadAll(r.Body)
+	if err != nil {
+		WriteException(w, common.Exception{
+			Code:    http.StatusBadRequest,
+			Message: err.Error(),
+		})
+		return
+	}
+	err = event.UnmarshalJSON(bytes)
 	if err != nil {
 		WriteException(w, common.Exception{
 			Code:    http.StatusBadRequest,

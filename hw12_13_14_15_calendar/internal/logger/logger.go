@@ -54,11 +54,13 @@ func InitLogger() error {
 		Encoding:    "console",
 		OutputPaths: file,
 		EncoderConfig: zapcore.EncoderConfig{
-			MessageKey:  "message",
-			LevelKey:    "level",
-			TimeKey:     "time",
-			EncodeLevel: CustomEncodeLevel,
-			EncodeTime:  CustomEncodeTime,
+			MessageKey:   "message",
+			LevelKey:     "level",
+			TimeKey:      "time",
+			CallerKey:    "caller",
+			EncodeLevel:  CustomEncodeLevel,
+			EncodeTime:   CustomEncodeTime,
+			EncodeCaller: zapcore.FullCallerEncoder,
 		},
 	}
 

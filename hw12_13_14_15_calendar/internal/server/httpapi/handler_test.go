@@ -152,7 +152,7 @@ func TestCreateEvent(t *testing.T) {
 }
 
 func TestUpdateEvent(t *testing.T) {
-	t.Run("successful update event", func(t *testing.T) {
+	t.Run("successful 2-update.feature event", func(t *testing.T) {
 		repo := memory.NewRepo()
 		ctx := context.Background()
 		InitHTTP(ctx, repo, config.Configuration)
@@ -198,7 +198,7 @@ func TestUpdateEvent(t *testing.T) {
 		require.Equal(t, eventNew.Title, weekList[0].Title)
 		require.Equal(t, eventNew.Description, weekList[0].Description)
 	})
-	t.Run("not successful update event", func(t *testing.T) {
+	t.Run("not successful 2-update.feature event", func(t *testing.T) {
 		repo := memory.NewRepo()
 		ctx := context.Background()
 		InitHTTP(ctx, repo, config.Configuration)
