@@ -1,27 +1,16 @@
 package httpapi
 
 import (
-	"context"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/service"
 	"net"
 	"net/http"
 	"time"
 
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"github.com/gorilla/mux"
 )
 
-var restAPI *Server
-
-type Deps struct {
-	ctx  context.Context
-	repo repository.EventsRepo
-}
-
-type Server struct {
-	Deps
-	Srv *http.Server
-}
+var s *service.Services
 
 func HTTPRouter() *mux.Router {
 	router := mux.NewRouter()
@@ -40,17 +29,11 @@ func HTTPRouter() *mux.Router {
 	return router
 }
 
-func InitHTTP(_ctx context.Context, _repo repository.EventsRepo, cfg *config.Config) *Server {
-	restAPI = &Server{
-		Deps: Deps{
-			ctx:  _ctx,
-			repo: _repo,
-		},
-		Srv: &http.Server{
-			Addr:              net.JoinHostPort(cfg.HTTP.Host, cfg.HTTP.Port),
-			Handler:           HTTPRouter(),
-			ReadHeaderTimeout: 1 * time.Second,
-		},
+func InitHTTP(services *service.Services, cfg *config.Config) *http.Server {
+	s = services
+	return &http.Server{
+		Addr:              net.JoinHostPort(cfg.HTTP.Host, cfg.HTTP.Port),
+		Handler:           HTTPRouter(),
+		ReadHeaderTimeout: 1 * time.Second,
 	}
-	return restAPI
 }

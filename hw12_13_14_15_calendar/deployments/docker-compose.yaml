@@ -76,40 +76,40 @@ services:
       timeout: 30s
       retries: 3
 
-  scheduler:
-    container_name: ${APP_NAME}_scheduler
-    build:
-      context: ..
-      dockerfile: ./build/scheduler/Dockerfile
-    restart: unless-stopped
-    command: --config /configs/config.json
-    volumes:
-      - "../configs:/configs"
-    networks:
-      - new
-    depends_on:
-      rabbit:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-
-
-
-  sender:
-    container_name: ${APP_NAME}_sender
-    build:
-      context: ..
-      dockerfile: ./build/sender/Dockerfile
-    restart: unless-stopped
-    command: --config /configs/config.json
-    volumes:
-      - "../configs:/configs"
-    networks:
-      - new
-    depends_on:
-      rabbit:
-        condition: service_healthy
-
-
-
+#  scheduler:
+#    container_name: ${APP_NAME}_scheduler
+#    build:
+#      context: ..
+#      dockerfile: ./build/scheduler/Dockerfile
+#    restart: unless-stopped
+#    command: --config /configs/config.json
+#    volumes:
+#      - "../configs:/configs"
+#    networks:
+#      - new
+#    depends_on:
+#      rabbit:
+#        condition: service_healthy
+#      postgres:
+#        condition: service_healthy
+#
+#
+#
+#  sender:
+#    container_name: ${APP_NAME}_sender
+#    build:
+#      context: ..
+#      dockerfile: ./build/sender/Dockerfile
+#    restart: unless-stopped
+#    command: --config /configs/config.json
+#    volumes:
+#      - "../configs:/configs"
+#    networks:
+#      - new
+#    depends_on:
+#      rabbit:
+#        condition: service_healthy
+#
+#
+#
 

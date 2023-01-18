@@ -3,10 +3,10 @@ package memory
 import (
 	"context"
 	"fmt"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
 	"testing"
 	"time"
 
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"github.com/stretchr/testify/require"
 )
 
@@ -16,9 +16,9 @@ func TestMemoryRepo(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 		repo := NewRepo()
-		events := make([]repository.Event, 0)
+		events := make([]common.Event, 0)
 		for i := 0; i < 10; i++ {
-			e := repository.Event{
+			e := common.Event{
 				Title:       fmt.Sprintf("Title %v", i),
 				Description: fmt.Sprintf("Description %v", i),
 				DateStart:   time.Now().AddDate(0, 0, i*1),
@@ -45,7 +45,7 @@ func TestMemoryRepo(t *testing.T) {
 		_, err = repo.Delete(ctx, 0)
 		require.Error(t, err)
 
-		e := repository.Event{
+		e := common.Event{
 			Title:       fmt.Sprintf("Title %v", 2),
 			Description: fmt.Sprintf("Description %v", 2),
 			DateStart:   time.Now().AddDate(0, 0, 1),
@@ -58,7 +58,7 @@ func TestMemoryRepo(t *testing.T) {
 		_, err = repo.Update(ctx, 1, e)
 		require.NoError(t, err)
 
-		var periodEvents []repository.Event
+		var periodEvents []common.Event
 
 		periodEvents, err = repo.DayList(ctx, time.Now().AddDate(0, 0, 1))
 		require.NoError(t, err)

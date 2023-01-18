@@ -11,11 +11,11 @@ func TestLogger(t *testing.T) {
 		Configuration, err := InitConfig("../../configs/config-test.json")
 		require.NoError(t, err)
 
-		require.Equal(t, "127.0.0.1", Configuration.DB.Host)
-		require.Equal(t, "5432", Configuration.DB.Port)
-		require.Equal(t, "test_user", Configuration.DB.User)
-		require.Equal(t, "test_password", Configuration.DB.Password)
-		require.Equal(t, "test_database", Configuration.DB.Database)
+		require.Equal(t, "0.0.0.0", Configuration.DB.Host)
+		require.Equal(t, "6000", Configuration.DB.Port)
+		require.Equal(t, "go_user", Configuration.DB.User)
+		require.Equal(t, "go_password", Configuration.DB.Password)
+		require.Equal(t, "events_db", Configuration.DB.Database)
 
 		require.Equal(t, Info, Configuration.Logger.Level)
 		require.Equal(t, "out.log", Configuration.Logger.File)

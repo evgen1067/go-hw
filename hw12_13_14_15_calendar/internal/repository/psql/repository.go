@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
 	"time"
 
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
@@ -48,7 +49,7 @@ func getDSN() string {
 		SSLMode)
 }
 
-func (r *Repo) Create(ctx context.Context, event repository.Event) (repository.EventID, error) {
+func (r *Repo) Create(ctx context.Context, event common.Event) (common.EventID, error) {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return event.ID, err
@@ -75,7 +76,7 @@ func (r *Repo) Create(ctx context.Context, event repository.Event) (repository.E
 	return event.ID, nil
 }
 
-func (r *Repo) Update(ctx context.Context, id repository.EventID, event repository.Event) (repository.EventID, error) {
+func (r *Repo) Update(ctx context.Context, id common.EventID, event common.Event) (common.EventID, error) {
 	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return id, err
@@ -109,7 +110,7 @@ func (r *Repo) Update(ctx context.Context, id repository.EventID, event reposito
 	return id, nil
 }
 
-func (r *Repo) Delete(ctx context.Context, id repository.EventID) (repository.EventID, error) {
+func (r *Repo) Delete(ctx context.Context, id common.EventID) (common.EventID, error) {
 	query := `DELETE FROM events WHERE id = $1`
 
 	result, err := r.db.ExecContext(ctx, query, id)
@@ -131,7 +132,7 @@ func (r *Repo) PeriodList(
 	ctx context.Context,
 	startPeriod time.Time,
 	period repository.Period,
-) ([]repository.Event, error) {
+) ([]common.Event, error) {
 	var endPeriod time.Time
 	switch period {
 	case "Day":
@@ -159,9 +160,9 @@ func (r *Repo) PeriodList(
 		return nil, err
 	}
 	defer rows.Close()
-	var events []repository.Event
+	var events []common.Event
 	for rows.Next() {
-		var event repository.Event
+		var event common.Event
 		if err := rows.Scan(
 			&event.ID,
 			&event.Title,
@@ -177,17 +178,17 @@ func (r *Repo) PeriodList(
 	return events, rows.Err()
 }
 
-func (r *Repo) DayList(ctx context.Context, startDate time.Time) ([]repository.Event, error) {
+func (r *Repo) DayList(ctx context.Context, startDate time.Time) ([]common.Event, error) {
 	period := repository.Period("Day")
 	return r.PeriodList(ctx, startDate, period)
 }
 
-func (r *Repo) WeekList(ctx context.Context, startDate time.Time) ([]repository.Event, error) {
+func (r *Repo) WeekList(ctx context.Context, startDate time.Time) ([]common.Event, error) {
 	period := repository.Period("Week")
 	return r.PeriodList(ctx, startDate, period)
 }
 
-func (r *Repo) MonthList(ctx context.Context, startDate time.Time) ([]repository.Event, error) {
+func (r *Repo) MonthList(ctx context.Context, startDate time.Time) ([]common.Event, error) {
 	period := repository.Period("Month")
 	return r.PeriodList(ctx, startDate, period)
 }
@@ -208,8 +209,8 @@ func (r *Repo) ClearOldEvents(ctx context.Context) error {
 	return nil
 }
 
-func (r *Repo) SchedulerList(ctx context.Context) ([]repository.Notice, error) {
-	var notices []repository.Notice
+func (r *Repo) SchedulerList(ctx context.Context) ([]common.Notice, error) {
+	var notices []common.Notice
 	query := `SELECT id, title, date_start, owner_id
 				FROM events
 				WHERE date_start > (now() - notify_in * interval '1 hour')
@@ -221,7 +222,7 @@ func (r *Repo) SchedulerList(ctx context.Context) ([]repository.Notice, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var notice repository.Notice
+		var notice common.Notice
 		if err := rows.Scan(
 			&notice.EventID,
 			&notice.Title,

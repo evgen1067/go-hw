@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
 	"log"
 	"os"
 	"os/signal"
@@ -12,7 +13,6 @@ import (
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/rabbit/consumer"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"github.com/streadway/amqp"
 )
 
@@ -65,7 +65,7 @@ func work(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case msg := <-messages:
-			var notice repository.Notice
+			var notice common.Notice
 			err := notice.UnmarshalJSON(msg.Body)
 			if err != nil {
 				logger.Logger.Error("Error when unmarshaling notifications: " + err.Error())

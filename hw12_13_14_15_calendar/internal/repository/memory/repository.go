@@ -3,6 +3,7 @@ package memory
 import (
 	"context"
 	"errors"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
 	"sync"
 	"time"
 
@@ -16,18 +17,18 @@ var (
 
 type Repo struct {
 	mu        sync.RWMutex
-	Events    map[repository.EventID]repository.Event
-	Increment repository.EventID
+	Events    map[common.EventID]common.Event
+	Increment common.EventID
 	length    int
 }
 
 func NewRepo() repository.EventsRepo {
 	return &Repo{
-		Events: make(map[repository.EventID]repository.Event),
+		Events: make(map[common.EventID]common.Event),
 	}
 }
 
-func (r *Repo) CheckDate(ctx context.Context, event repository.Event) error {
+func (r *Repo) CheckDate(ctx context.Context, event common.Event) error {
 	for _, e := range r.Events {
 		if e.DateStart.Format("2/Jan/2006:15:04") == event.DateStart.Format("2/Jan/2006:15:04") && e.ID != event.ID {
 			return ErrDateBusy
@@ -36,7 +37,7 @@ func (r *Repo) CheckDate(ctx context.Context, event repository.Event) error {
 	return nil
 }
 
-func (r *Repo) Create(ctx context.Context, event repository.Event) (repository.EventID, error) {
+func (r *Repo) Create(ctx context.Context, event common.Event) (common.EventID, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	event.ID = r.Increment
@@ -50,7 +51,7 @@ func (r *Repo) Create(ctx context.Context, event repository.Event) (repository.E
 	return event.ID, nil
 }
 
-func (r *Repo) Update(ctx context.Context, id repository.EventID, event repository.Event) (repository.EventID, error) {
+func (r *Repo) Update(ctx context.Context, id common.EventID, event common.Event) (common.EventID, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -69,7 +70,7 @@ func (r *Repo) Update(ctx context.Context, id repository.EventID, event reposito
 	return event.ID, nil
 }
 
-func (r *Repo) Delete(ctx context.Context, id repository.EventID) (repository.EventID, error) {
+func (r *Repo) Delete(ctx context.Context, id common.EventID) (common.EventID, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -86,7 +87,7 @@ func (r *Repo) PeriodList(
 	ctx context.Context,
 	startPeriod time.Time,
 	period repository.Period,
-) ([]repository.Event, error) {
+) ([]common.Event, error) {
 	var endPeriod time.Time
 	switch period {
 	case "Day":
@@ -96,7 +97,7 @@ func (r *Repo) PeriodList(
 	case "Month":
 		endPeriod = startPeriod.AddDate(0, 1, 0)
 	}
-	var events []repository.Event
+	var events []common.Event
 	for _, e := range r.Events {
 		if e.DateEnd.After(startPeriod) && endPeriod.After(e.DateStart) {
 			events = append(events, e)
@@ -105,21 +106,21 @@ func (r *Repo) PeriodList(
 	return events, nil
 }
 
-func (r *Repo) DayList(ctx context.Context, startDate time.Time) ([]repository.Event, error) {
+func (r *Repo) DayList(ctx context.Context, startDate time.Time) ([]common.Event, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	period := repository.Period("Day")
 	return r.PeriodList(ctx, startDate, period)
 }
 
-func (r *Repo) WeekList(ctx context.Context, startDate time.Time) ([]repository.Event, error) {
+func (r *Repo) WeekList(ctx context.Context, startDate time.Time) ([]common.Event, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	period := repository.Period("Week")
 	return r.PeriodList(ctx, startDate, period)
 }
 
-func (r *Repo) MonthList(ctx context.Context, startDate time.Time) ([]repository.Event, error) {
+func (r *Repo) MonthList(ctx context.Context, startDate time.Time) ([]common.Event, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	period := repository.Period("Month")

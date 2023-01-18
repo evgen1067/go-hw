@@ -1,6 +1,7 @@
 package httpapi
 
 import (
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
 	"io"
 	"net/http"
 	"strconv"
@@ -8,7 +9,6 @@ import (
 	"time"
 
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/server/httpapi/common"
 	"github.com/gorilla/mux"
 )
 
@@ -29,7 +29,7 @@ func HelloWorld(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateEvent(w http.ResponseWriter, r *http.Request) {
-	var event repository.Event
+	var event common.Event
 	bytes, err := io.ReadAll(r.Body)
 	if err != nil {
 		WriteException(w, common.Exception{
@@ -46,8 +46,8 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	var eventID repository.EventID
-	eventID, err = restAPI.repo.Create(restAPI.ctx, event)
+	var eventID common.EventID
+	eventID, err = s.Create(event)
 	if err != nil {
 		WriteException(w, common.Exception{
 			Code:    http.StatusBadRequest,
@@ -63,7 +63,7 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 
 func UpdateEvent(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(mux.Vars(r)["id"])
-	eventID := repository.EventID(id)
+	eventID := common.EventID(id)
 	if err != nil {
 		WriteException(w, common.Exception{
 			Code:    http.StatusBadRequest,
@@ -71,7 +71,7 @@ func UpdateEvent(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	var event repository.Event
+	var event common.Event
 	bytes, err := io.ReadAll(r.Body)
 	if err != nil {
 		WriteException(w, common.Exception{
@@ -88,7 +88,7 @@ func UpdateEvent(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	eventID, err = restAPI.repo.Update(restAPI.ctx, eventID, event)
+	eventID, err = s.Update(eventID, event)
 	if err != nil {
 		WriteException(w, common.Exception{
 			Code:    http.StatusBadRequest,
@@ -111,8 +111,8 @@ func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	eventID := repository.EventID(id)
-	eventID, err = restAPI.repo.Delete(restAPI.ctx, eventID)
+	eventID := common.EventID(id)
+	eventID, err = s.Delete(eventID)
 	if err != nil {
 		WriteException(w, common.Exception{
 			Code:    http.StatusBadRequest,
@@ -159,14 +159,14 @@ func EventList(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-	var events []repository.Event
+	var events []common.Event
 	switch period {
 	case "Day":
-		events, err = restAPI.repo.DayList(restAPI.ctx, startDate)
+		events, err = s.DayList(startDate)
 	case "Week":
-		events, err = restAPI.repo.WeekList(restAPI.ctx, startDate)
+		events, err = s.WeekList(startDate)
 	case "Month":
-		events, err = restAPI.repo.MonthList(restAPI.ctx, startDate)
+		events, err = s.MonthList(startDate)
 	}
 	if err != nil {
 		WriteException(w, common.Exception{

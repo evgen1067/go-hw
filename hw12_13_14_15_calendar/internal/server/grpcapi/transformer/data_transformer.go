@@ -1,14 +1,14 @@
 package transformer
 
 import (
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
 	"time"
 
 	"github.com/evgen1067/hw12_13_14_15_calendar/api"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"github.com/golang/protobuf/ptypes/timestamp"
 )
 
-func TransformEventToPb(e repository.Event) *api.Event {
+func TransformEventToPb(e common.Event) *api.Event {
 	return &api.Event{
 		Id:          uint64(e.ID),
 		Title:       e.Title,
@@ -20,9 +20,9 @@ func TransformEventToPb(e repository.Event) *api.Event {
 	}
 }
 
-func TransformPbToEvent(e *api.Event) repository.Event {
-	return repository.Event{
-		ID:          repository.EventID(e.Id),
+func TransformPbToEvent(e *api.Event) common.Event {
+	return common.Event{
+		ID:          common.EventID(e.Id),
 		Title:       e.Title,
 		Description: e.Description,
 		DateStart:   time.Unix(e.DateStart.Seconds, int64(e.DateStart.Nanos)),

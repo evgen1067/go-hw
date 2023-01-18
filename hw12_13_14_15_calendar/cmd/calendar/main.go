@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/app/calendar"
 	"log"
 
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/app/calendar"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
 )
@@ -25,8 +25,7 @@ func main() {
 	if err != nil {
 		logger.Logger.Error("Error when reading the configuration file: " + err.Error())
 	}
-	app := calendar.InitApp()
-	err = app.Start()
+	err = calendar.Run()
 	if err != nil {
 		logger.Logger.Error("Error when launching the application: " + err.Error())
 	}

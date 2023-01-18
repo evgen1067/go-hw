@@ -3,13 +3,14 @@ package grpcapi
 import (
 	"context"
 	"fmt"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/service"
 	"net"
 	"time"
 
 	"github.com/evgen1067/hw12_13_14_15_calendar/api"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"google.golang.org/grpc"
 )
 
@@ -20,22 +21,19 @@ type Deps struct {
 }
 
 type Server struct {
-	Deps
+	address  string
+	services *service.Services
 	api.UnimplementedEventServiceServer
 	Srv *grpc.Server
 }
 
-func InitGRPC(_ctx context.Context, _repo repository.EventsRepo, cfg *config.Config) *Server {
+func InitGRPC(cfg *config.Config, services *service.Services) *Server {
 	srv := grpc.NewServer(grpc.UnaryInterceptor(LoggerInterceptor))
 	server := &Server{
-		Deps: Deps{
-			ctx:     _ctx,
-			repo:    _repo,
-			address: net.JoinHostPort(cfg.GRPC.Host, cfg.GRPC.Port),
-		},
-		Srv: nil,
+		Srv:      srv,
+		address:  net.JoinHostPort(cfg.GRPC.Host, cfg.GRPC.Port),
+		services: services,
 	}
-	server.Srv = srv
 	api.RegisterEventServiceServer(srv, server)
 	return server
 }

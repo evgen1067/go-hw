@@ -2,11 +2,6 @@ package calendar
 
 import (
 	"context"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
-
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
@@ -14,17 +9,15 @@ import (
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository/psql"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/server/grpcapi"
 	httpApi "github.com/evgen1067/hw12_13_14_15_calendar/internal/server/httpapi"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/service"
+	"os/signal"
+	"syscall"
 )
 
-type App struct {
-	ctx    context.Context
-	config *config.Config
-	repo   repository.EventsRepo
-	http   *httpApi.Server
-	grpc   *grpcapi.Server
-}
+func Run() error {
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
 
-func InitApp() *App {
 	var repo repository.EventsRepo
 	conf := config.Configuration
 	if conf.SQL {
@@ -32,42 +25,32 @@ func InitApp() *App {
 	} else {
 		repo = memory.NewRepo()
 	}
-	ctx := context.Background()
-	httpSrv := httpApi.InitHTTP(ctx, repo, conf)
-	grpcSrv := grpcapi.InitGRPC(ctx, repo, conf)
-	return &App{
-		ctx:    ctx,
-		config: conf,
-		repo:   repo,
-		http:   httpSrv,
-		grpc:   grpcSrv,
-	}
-}
 
-func (app *App) Start() error {
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-
-	if repo, ok := app.repo.(repository.DatabaseRepo); ok {
-		err := repo.Connect(app.ctx)
+	if r, ok := repo.(repository.DatabaseRepo); ok {
+		err := r.Connect(ctx)
 		if err != nil {
 			return err
 		}
 		logger.Logger.Info("Database started.")
-		defer repo.Close()
+		defer r.Close()
 	}
+
+	services := service.NewServices(ctx, repo)
+
+	httpSrv := httpApi.InitHTTP(services, conf)
+	grpcSrv := grpcapi.InitGRPC(conf, services)
 
 	errs := make(chan error)
 	go func() {
 		logger.Logger.Info("HTTP server started.")
-		err := app.http.Srv.ListenAndServe()
+		err := httpSrv.ListenAndServe()
 		if err != nil {
 			errs <- err
 		}
 	}()
 	go func() {
 		logger.Logger.Info("GRPC server started.")
-		err := app.grpc.ListenAndServe()
+		err := grpcSrv.ListenAndServe()
 		if err != nil {
 			errs <- err
 		}
@@ -77,17 +60,13 @@ func (app *App) Start() error {
 	case err := <-errs:
 		logger.Logger.Error(err.Error())
 		return err
-	case <-done:
+	case <-ctx.Done():
 		logger.Logger.Info("Shutdown with Signal.")
 	}
 
-	ctx, cancel := context.WithTimeout(app.ctx, 3*time.Second)
-	defer cancel()
+	grpcSrv.Srv.GracefulStop()
 
-	app.grpc.Srv.GracefulStop()
-
-	// now close the server gracefully ("shutdown")
-	if err := app.http.Srv.Shutdown(ctx); err != nil {
+	if err := httpSrv.Shutdown(ctx); err != nil {
 		return err
 	}
 

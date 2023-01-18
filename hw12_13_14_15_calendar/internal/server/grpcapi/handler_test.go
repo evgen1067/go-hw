@@ -2,6 +2,8 @@ package grpcapi
 
 import (
 	"context"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/service"
 	"log"
 	"net"
 	"testing"
@@ -9,7 +11,6 @@ import (
 
 	"github.com/evgen1067/hw12_13_14_15_calendar/api"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository/memory"
 	data "github.com/evgen1067/hw12_13_14_15_calendar/internal/server/grpcapi/transformer"
 	"github.com/golang/protobuf/ptypes/timestamp"
@@ -27,7 +28,7 @@ func TestHandlers(t *testing.T) {
 
 	dateStart := time.Now()
 
-	event := data.TransformEventToPb(repository.Event{
+	event := data.TransformEventToPb(common.Event{
 		ID:          0,
 		Title:       "Title",
 		Description: "Description",
@@ -39,8 +40,8 @@ func TestHandlers(t *testing.T) {
 	createRequest := &api.CreateRequest{Event: event}
 	createRequests := make([]*api.CreateRequest, 0)
 	for i := 1; i < 10; i++ {
-		e := data.TransformEventToPb(repository.Event{
-			ID:          repository.EventID(i),
+		e := data.TransformEventToPb(common.Event{
+			ID:          common.EventID(i),
 			Title:       "Title",
 			Description: "Description",
 			DateStart:   dateStart.AddDate(0, 0, i*1),
@@ -111,7 +112,8 @@ func server(ctx context.Context) (api.EventServiceClient, func()) {
 
 	cfg, _ := config.InitConfig("../../../configs/local.json")
 	repo := memory.NewRepo()
-	grpcSrv := InitGRPC(ctx, repo, cfg)
+	serv := service.NewServices(ctx, repo)
+	grpcSrv := InitGRPC(cfg, serv)
 
 	baseServer := grpc.NewServer()
 

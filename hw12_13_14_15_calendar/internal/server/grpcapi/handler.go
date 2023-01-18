@@ -2,17 +2,17 @@ package grpcapi
 
 import (
 	"context"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
 	"time"
 
 	"github.com/evgen1067/hw12_13_14_15_calendar/api"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	data "github.com/evgen1067/hw12_13_14_15_calendar/internal/server/grpcapi/transformer"
 )
 
 func (s *Server) Create(ctx context.Context, req *api.CreateRequest) (*api.CreateResponse, error) {
 	e := data.TransformPbToEvent(req.Event)
 
-	eID, err := s.repo.Create(ctx, e)
+	eID, err := s.services.Create(e)
 	if err != nil {
 		return nil, err
 	}
@@ -23,10 +23,10 @@ func (s *Server) Create(ctx context.Context, req *api.CreateRequest) (*api.Creat
 }
 
 func (s *Server) Update(ctx context.Context, req *api.UpdateRequest) (*api.UpdateResponse, error) {
-	id := repository.EventID(req.Id)
+	id := common.EventID(req.Id)
 	e := data.TransformPbToEvent(req.Event)
 
-	eID, err := s.repo.Update(ctx, id, e)
+	eID, err := s.services.Update(id, e)
 	if err != nil {
 		return nil, err
 	}
@@ -37,9 +37,9 @@ func (s *Server) Update(ctx context.Context, req *api.UpdateRequest) (*api.Updat
 }
 
 func (s *Server) Delete(ctx context.Context, req *api.DeleteRequest) (*api.DeleteResponse, error) {
-	id := repository.EventID(req.Id)
+	id := common.EventID(req.Id)
 
-	eID, err := s.repo.Delete(ctx, id)
+	eID, err := s.services.Delete(id)
 	if err != nil {
 		return nil, err
 	}
@@ -50,23 +50,23 @@ func (s *Server) Delete(ctx context.Context, req *api.DeleteRequest) (*api.Delet
 }
 
 func (s *Server) DayList(ctx context.Context, req *api.ListRequest) (*api.ListResponse, error) {
-	return PeriodList(ctx, req, s.repo.DayList)
+	return PeriodList(ctx, req, s.services.DayList)
 }
 
 func (s *Server) WeekList(ctx context.Context, req *api.ListRequest) (*api.ListResponse, error) {
-	return PeriodList(ctx, req, s.repo.WeekList)
+	return PeriodList(ctx, req, s.services.WeekList)
 }
 
 func (s *Server) MonthList(ctx context.Context, req *api.ListRequest) (*api.ListResponse, error) {
-	return PeriodList(ctx, req, s.repo.MonthList)
+	return PeriodList(ctx, req, s.services.MonthList)
 }
 
 func PeriodList(ctx context.Context,
 	req *api.ListRequest,
-	fn func(ctx context.Context, startDate time.Time) ([]repository.Event, error),
+	fn func(startDate time.Time) ([]common.Event, error),
 ) (*api.ListResponse, error) {
 	startDate := time.Unix(req.Date.Seconds, int64(req.Date.Nanos))
-	events, err := fn(ctx, startDate)
+	events, err := fn(startDate)
 	if err != nil {
 		return nil, err
 	}

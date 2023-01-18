@@ -5,6 +5,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/service"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -12,20 +14,20 @@ import (
 	"time"
 
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository/memory"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/server/httpapi/common"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/require"
 )
 
 var ctx context.Context
 
-func CreateEventInRepo() (repository.EventID, error) {
-	repo := memory.NewRepo()
+func CreateEventInRepo() (common.EventID, error) {
 	ctx = context.Background()
-	InitHTTP(ctx, repo, config.Configuration)
-	event := repository.Event{
+	repo := memory.NewRepo()
+	cfg, _ := config.InitConfig("../../../configs/config-test.json")
+	s := service.NewServices(ctx, repo)
+	InitHTTP(s, cfg)
+	event := common.Event{
 		Title:       "Title",
 		Description: "Desc",
 		DateStart:   time.Now(),
@@ -75,9 +77,12 @@ func TestCreateEvent(t *testing.T) {
 	t.Run("successful create event", func(t *testing.T) {
 		repo := memory.NewRepo()
 		ctx := context.Background()
-		InitHTTP(ctx, repo, config.Configuration)
+		cfg, err := config.InitConfig("../../../configs/config-test.json")
+		require.NoError(t, err)
+		s := service.NewServices(ctx, repo)
+		InitHTTP(s, cfg)
 
-		eventNew := repository.Event{
+		eventNew := common.Event{
 			Title:       "Title",
 			Description: "Desc",
 			DateStart:   time.Now(),
@@ -86,7 +91,7 @@ func TestCreateEvent(t *testing.T) {
 			OwnerID:     1,
 		}
 		b := new(bytes.Buffer)
-		err := json.NewEncoder(b).Encode(&eventNew)
+		err = json.NewEncoder(b).Encode(&eventNew)
 		require.NoError(t, err)
 
 		recorder := httptest.NewRecorder()
@@ -99,7 +104,7 @@ func TestCreateEvent(t *testing.T) {
 		err = json.NewDecoder(recorder.Body).Decode(&resp)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.Code)
-		require.Equal(t, repository.EventID(0), resp.EventID)
+		require.Equal(t, common.EventID(0), resp.EventID)
 
 		weekList, err := repo.WeekList(ctx, time.Now().AddDate(0, 0, -1))
 		require.NoError(t, err)
@@ -108,9 +113,12 @@ func TestCreateEvent(t *testing.T) {
 	t.Run("not successful create event", func(t *testing.T) {
 		repo := memory.NewRepo()
 		ctx := context.Background()
-		InitHTTP(ctx, repo, config.Configuration)
+		cfg, err := config.InitConfig("../../../configs/config-test.json")
+		require.NoError(t, err)
+		s := service.NewServices(ctx, repo)
+		InitHTTP(s, cfg)
 		dateStart := time.Now()
-		event := repository.Event{
+		event := common.Event{
 			Title:       "Title",
 			Description: "Desc",
 			DateStart:   dateStart,
@@ -121,7 +129,7 @@ func TestCreateEvent(t *testing.T) {
 		id, err := repo.Create(ctx, event)
 		require.NoError(t, err)
 
-		eventNew := repository.Event{
+		eventNew := common.Event{
 			Title:       "Title",
 			Description: "Desc",
 			DateStart:   dateStart,
@@ -155,8 +163,11 @@ func TestUpdateEvent(t *testing.T) {
 	t.Run("successful 2-update.feature event", func(t *testing.T) {
 		repo := memory.NewRepo()
 		ctx := context.Background()
-		InitHTTP(ctx, repo, config.Configuration)
-		event := repository.Event{
+		cfg, err := config.InitConfig("../../../configs/config-test.json")
+		require.NoError(t, err)
+		s := service.NewServices(ctx, repo)
+		InitHTTP(s, cfg)
+		event := common.Event{
 			Title:       "Title",
 			Description: "Desc",
 			DateStart:   time.Now(),
@@ -167,7 +178,7 @@ func TestUpdateEvent(t *testing.T) {
 		id, err := repo.Create(ctx, event)
 		require.NoError(t, err)
 
-		eventNew := repository.Event{
+		eventNew := common.Event{
 			Title:       "New",
 			Description: "New",
 			DateStart:   time.Now(),
@@ -201,9 +212,12 @@ func TestUpdateEvent(t *testing.T) {
 	t.Run("not successful 2-update.feature event", func(t *testing.T) {
 		repo := memory.NewRepo()
 		ctx := context.Background()
-		InitHTTP(ctx, repo, config.Configuration)
-		id := repository.EventID(0)
-		eventNew := repository.Event{
+		cfg, err := config.InitConfig("../../../configs/config-test.json")
+		require.NoError(t, err)
+		s := service.NewServices(ctx, repo)
+		InitHTTP(s, cfg)
+		id := common.EventID(0)
+		eventNew := common.Event{
 			Title:       "Title",
 			Description: "Desc",
 			DateStart:   time.Now(),
@@ -212,7 +226,7 @@ func TestUpdateEvent(t *testing.T) {
 			OwnerID:     1,
 		}
 		b := new(bytes.Buffer)
-		err := json.NewEncoder(b).Encode(&eventNew)
+		err = json.NewEncoder(b).Encode(&eventNew)
 		require.NoError(t, err)
 
 		recorder := httptest.NewRecorder()
@@ -245,7 +259,7 @@ func TestDeleteEvent(t *testing.T) {
 		require.Equal(t, id, resp.EventID)
 	})
 	t.Run("not successful delete event", func(t *testing.T) {
-		id := repository.EventID(0)
+		id := common.EventID(0)
 		recorder := httptest.NewRecorder()
 		router := mux.NewRouter()
 		router.HandleFunc("/events/{id}", DeleteEvent).Methods(http.MethodDelete)
@@ -323,6 +337,6 @@ func TestEventList(t *testing.T) {
 		err = json.NewDecoder(recorder.Body).Decode(&resp)
 		require.NoError(t, err)
 		require.Equal(t, http.StatusOK, resp.Code)
-		require.Equal(t, repository.EventID(0), resp.Events[0].ID)
+		require.Equal(t, common.EventID(0), resp.Events[0].ID)
 	})
 }
