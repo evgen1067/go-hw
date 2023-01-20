@@ -1,18 +1,18 @@
-package httpapi
+package rest
 
 import (
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/service"
 	"net"
 	"net/http"
 	"time"
 
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/services"
 	"github.com/gorilla/mux"
 )
 
-var s *service.Services
+var s *services.Services
 
-func HTTPRouter() *mux.Router {
+func Router() *mux.Router {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", HelloWorld).Methods(http.MethodGet)
@@ -29,11 +29,11 @@ func HTTPRouter() *mux.Router {
 	return router
 }
 
-func InitHTTP(services *service.Services, cfg *config.Config) *http.Server {
-	s = services
+func NewServer(_s *services.Services, cfg *config.Config) *http.Server {
+	s = _s
 	return &http.Server{
 		Addr:              net.JoinHostPort(cfg.HTTP.Host, cfg.HTTP.Port),
-		Handler:           HTTPRouter(),
-		ReadHeaderTimeout: 1 * time.Second,
+		Handler:           Router(),
+		ReadHeaderTimeout: 3 * time.Second,
 	}
 }

@@ -1,18 +1,19 @@
-package service
+package services
 
 import (
 	"context"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
 	"time"
+
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/storage"
 )
 
 type EventsService struct {
 	ctx context.Context
-	db  repository.EventsRepo
+	db  storage.EventsStorage
 }
 
-func NewEventsService(ctx context.Context, db repository.EventsRepo) *EventsService {
+func NewEventsService(ctx context.Context, db storage.EventsStorage) *EventsService {
 	return &EventsService{
 		ctx: ctx,
 		db:  db,
@@ -30,6 +31,7 @@ func (e *EventsService) Update(id common.EventID, event common.Event) (common.Ev
 func (e *EventsService) Delete(id common.EventID) (common.EventID, error) {
 	return e.db.Delete(e.ctx, id)
 }
+
 func (e *EventsService) DayList(startDate time.Time) ([]common.Event, error) {
 	return e.db.DayList(e.ctx, startDate)
 }

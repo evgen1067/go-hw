@@ -1,16 +1,14 @@
-package grpcapi
+package grpc
 
 import (
 	"context"
+	"github.com/evgen1067/hw12_13_14_15_calendar/api"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
 	"time"
-
-	"github.com/evgen1067/hw12_13_14_15_calendar/api"
-	data "github.com/evgen1067/hw12_13_14_15_calendar/internal/server/grpcapi/transformer"
 )
 
 func (s *Server) Create(ctx context.Context, req *api.CreateRequest) (*api.CreateResponse, error) {
-	e := data.TransformPbToEvent(req.Event)
+	e := TransformPbToEvent(req.Event)
 
 	eID, err := s.services.Create(e)
 	if err != nil {
@@ -24,7 +22,7 @@ func (s *Server) Create(ctx context.Context, req *api.CreateRequest) (*api.Creat
 
 func (s *Server) Update(ctx context.Context, req *api.UpdateRequest) (*api.UpdateResponse, error) {
 	id := common.EventID(req.Id)
-	e := data.TransformPbToEvent(req.Event)
+	e := TransformPbToEvent(req.Event)
 
 	eID, err := s.services.Update(id, e)
 	if err != nil {
@@ -72,7 +70,7 @@ func PeriodList(ctx context.Context,
 	}
 	periodList := make([]*api.Event, 0)
 	for _, val := range events {
-		periodList = append(periodList, data.TransformEventToPb(val))
+		periodList = append(periodList, TransformEventToPb(val))
 	}
 	return &api.ListResponse{Event: periodList}, nil
 }

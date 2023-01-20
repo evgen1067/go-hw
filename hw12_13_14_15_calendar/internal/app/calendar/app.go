@@ -2,75 +2,75 @@ package calendar
 
 import (
 	"context"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository/memory"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository/psql"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/server/grpcapi"
-	httpApi "github.com/evgen1067/hw12_13_14_15_calendar/internal/server/httpapi"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/service"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/server/grpc"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/storage/memory"
 	"os/signal"
 	"syscall"
+
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/server/rest"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/services"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/storage"
+	psql "github.com/evgen1067/hw12_13_14_15_calendar/internal/storage/sql"
 )
 
-func Run() error {
+func Run(cfg *config.Config, logg *logger.Logger) error {
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer cancel()
 
-	var repo repository.EventsRepo
-	conf := config.Configuration
-	if conf.SQL {
-		repo = psql.NewRepo()
+	errs := make(chan error)
+
+	var db storage.EventsStorage
+	if cfg.SQL {
+		db = psql.NewStorage()
 	} else {
-		repo = memory.NewRepo()
+		db = memory.NewStorage()
 	}
 
-	if r, ok := repo.(repository.DatabaseRepo); ok {
-		err := r.Connect(ctx)
+	if r, ok := db.(storage.DBStorage); ok {
+		err := r.Connect(ctx, cfg)
 		if err != nil {
 			return err
 		}
-		logger.Logger.Info("Database started.")
+		logg.Info("Database started.")
 		defer r.Close()
 	}
 
-	services := service.NewServices(ctx, repo)
+	service := services.NewServices(ctx, db, logg)
 
-	httpSrv := httpApi.InitHTTP(services, conf)
-	grpcSrv := grpcapi.InitGRPC(conf, services)
+	restAPI := rest.NewServer(service, cfg)
 
-	errs := make(chan error)
 	go func() {
-		logger.Logger.Info("HTTP server started.")
-		err := httpSrv.ListenAndServe()
-		if err != nil {
-			errs <- err
-		}
-	}()
-	go func() {
-		logger.Logger.Info("GRPC server started.")
-		err := grpcSrv.ListenAndServe()
+		logg.Info("HTTP server started.")
+		err := restAPI.ListenAndServe()
 		if err != nil {
 			errs <- err
 		}
 	}()
 
+	grpcAPI := grpc.NewGRPC(service, cfg)
+
+	go func() {
+		logg.Info("GRPC server started.")
+		err := grpcAPI.ListenAndServe()
+		if err != nil {
+			errs <- err
+		}
+	}()
+
+	// Выползаем при ошибке или завершении программы
 	select {
 	case err := <-errs:
-		logger.Logger.Error(err.Error())
 		return err
 	case <-ctx.Done():
-		logger.Logger.Info("Shutdown with Signal.")
 	}
 
-	grpcSrv.Srv.GracefulStop()
+	grpcAPI.Stop()
 
-	if err := httpSrv.Shutdown(ctx); err != nil {
+	if err := restAPI.Shutdown(ctx); err != nil {
 		return err
 	}
-
-	logger.Logger.Info("Servers Exited Properly.")
 
 	return nil
 }

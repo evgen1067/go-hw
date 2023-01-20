@@ -1,16 +1,15 @@
-package scripts
+package tests
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/cucumber/godog"
+	"github.com/cucumber/messages-go/v16"
 	"io"
 	"net/http"
 	"reflect"
 	"strings"
-
-	"github.com/cucumber/godog"
-	"github.com/cucumber/messages-go/v16"
 )
 
 type EventTest struct {

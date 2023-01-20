@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/app/calendar"
 	"log"
 
@@ -12,21 +13,23 @@ import (
 var configFile string
 
 func init() {
-	flag.StringVar(&configFile, "config", "configs/local.json", "Path to json configuration file")
+	flag.StringVar(&configFile, "config", "configs/local.json", "Path to configuration file")
 }
 
 func main() {
 	flag.Parse()
-	err := logger.InitLogger()
+
+	cfg, err := config.Parse(configFile)
+	if err != nil {
+		log.Fatalf("Error when reading the configuration file: %s", err)
+	}
+	logg, err := logger.NewLogger(cfg)
 	if err != nil {
 		log.Fatalf("Error during logger initialization: %s", err)
 	}
-	_, err = config.InitConfig(configFile)
+	fmt.Println(cfg)
+	err = calendar.Run(cfg, logg)
 	if err != nil {
-		logger.Logger.Error("Error when reading the configuration file: " + err.Error())
-	}
-	err = calendar.Run()
-	if err != nil {
-		logger.Logger.Error("Error when launching the application: " + err.Error())
+		logg.Error(err.Error())
 	}
 }

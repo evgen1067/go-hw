@@ -1,14 +1,15 @@
-package httpapi
+package rest
 
 import (
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
+	"errors"
 	"io"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/storage"
 	"github.com/gorilla/mux"
 )
 
@@ -48,17 +49,26 @@ func CreateEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	var eventID common.EventID
 	eventID, err = s.Create(event)
-	if err != nil {
+	switch {
+	case errors.Is(err, common.ErrDateBusy):
 		WriteException(w, common.Exception{
-			Code:    http.StatusBadRequest,
+			Code:    http.StatusConflict,
 			Message: err.Error(),
 		})
 		return
+	case err != nil:
+		WriteException(w, common.Exception{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+		return
+	default:
+		WriteEventIDResponse(w, common.ResponseEventID{
+			Code:    http.StatusCreated,
+			EventID: eventID,
+		})
+		return
 	}
-	WriteEventIDResponse(w, common.ResponseEventID{
-		Code:    http.StatusOK,
-		EventID: eventID,
-	})
 }
 
 func UpdateEvent(w http.ResponseWriter, r *http.Request) {
@@ -89,17 +99,31 @@ func UpdateEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	eventID, err = s.Update(eventID, event)
-	if err != nil {
+	switch {
+	case errors.Is(err, common.ErrNotFound):
 		WriteException(w, common.Exception{
-			Code:    http.StatusBadRequest,
+			Code:    http.StatusNotFound,
 			Message: err.Error(),
 		})
 		return
+	case errors.Is(err, common.ErrDateBusy):
+		WriteException(w, common.Exception{
+			Code:    http.StatusConflict,
+			Message: err.Error(),
+		})
+		return
+	case err != nil:
+		WriteException(w, common.Exception{
+			Code:    http.StatusInternalServerError,
+			Message: err.Error(),
+		})
+		return
+	default:
+		WriteEventIDResponse(w, common.ResponseEventID{
+			Code:    http.StatusOK,
+			EventID: eventID,
+		})
 	}
-	WriteEventIDResponse(w, common.ResponseEventID{
-		Code:    http.StatusOK,
-		EventID: eventID,
-	})
 }
 
 func DeleteEvent(w http.ResponseWriter, r *http.Request) {
@@ -115,27 +139,27 @@ func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 	eventID, err = s.Delete(eventID)
 	if err != nil {
 		WriteException(w, common.Exception{
-			Code:    http.StatusBadRequest,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 		return
 	}
 	WriteEventIDResponse(w, common.ResponseEventID{
-		Code:    http.StatusOK,
+		Code:    http.StatusAccepted,
 		EventID: eventID,
 	})
 }
 
 func EventList(w http.ResponseWriter, r *http.Request) {
 	_period := strings.ToLower(mux.Vars(r)["period"])
-	var period repository.Period
+	var period storage.Period
 	switch _period {
 	case "day":
-		period = repository.Period("Day")
+		period = storage.Period("Day")
 	case "week":
-		period = repository.Period("Week")
+		period = storage.Period("Week")
 	case "month":
-		period = repository.Period("Month")
+		period = storage.Period("Month")
 	default:
 		WriteException(w, common.Exception{
 			Code:    http.StatusBadRequest,
@@ -170,7 +194,7 @@ func EventList(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		WriteException(w, common.Exception{
-			Code:    http.StatusBadRequest,
+			Code:    http.StatusInternalServerError,
 			Message: err.Error(),
 		})
 		return

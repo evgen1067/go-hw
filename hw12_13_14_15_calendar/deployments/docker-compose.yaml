@@ -93,8 +93,6 @@ services:
       postgres:
         condition: service_healthy
 
-
-
   sender:
     container_name: ${APP_NAME}_sender
     build:
@@ -109,7 +107,3 @@ services:
     depends_on:
       rabbit:
         condition: service_healthy
-
-
-
-

@@ -3,58 +3,50 @@ package psql
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
 	"time"
 
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/storage"
 	_ "github.com/jackc/pgx/v4/stdlib" //nolint:blank-imports
 )
 
-var ErrNotFound = errors.New("event not found")
-
-type Repo struct {
+type Storage struct {
 	db *sql.DB
 }
 
-func NewRepo() repository.DatabaseRepo {
-	return new(Repo)
+func NewStorage() storage.DBStorage {
+	return new(Storage)
 }
 
-func (r *Repo) Connect(ctx context.Context) (err error) {
-	r.db, err = sql.Open("pgx", getDSN())
+func (store *Storage) Connect(ctx context.Context, cfg *config.Config) (err error) {
+	store.db, err = sql.Open("pgx", getDSN(cfg))
 	if err != nil {
-		return err // failed to load driver
+		return fmt.Errorf("failed to load driver: %w", err)
 	}
-	return r.db.PingContext(ctx)
+	return store.db.PingContext(ctx)
 }
 
-func (r *Repo) Close() error {
-	return r.db.Close()
+func (store *Storage) Close() error {
+	return store.db.Close()
 }
 
-func getDSN() string {
-	SSLMode := "disable"
-	if config.Configuration.DB.SSLMode {
-		SSLMode = "enable"
-	}
-	return fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=%v",
-		config.Configuration.DB.Host,
-		config.Configuration.DB.Port,
-		config.Configuration.DB.User,
-		config.Configuration.DB.Password,
-		config.Configuration.DB.Database,
-		SSLMode)
+func getDSN(cfg *config.Config) string {
+	return fmt.Sprintf("host=%s port=%v user=%s password=%s dbname=%s sslmode=%s",
+		cfg.DB.Host,
+		cfg.DB.Port,
+		cfg.DB.User,
+		cfg.DB.Password,
+		cfg.DB.Database,
+		cfg.DB.SSLMode)
 }
 
-func (r *Repo) Create(ctx context.Context, event common.Event) (common.EventID, error) {
-	tx, err := r.db.BeginTx(ctx, nil)
+func (store *Storage) Create(ctx context.Context, event common.Event) (common.EventID, error) {
+	tx, err := store.db.BeginTx(ctx, nil)
 	if err != nil {
 		return event.ID, err
 	}
-	// Defer a rollback in case anything fails.
 	defer tx.Rollback()
 
 	query := `INSERT INTO events (title, description, date_start, 
@@ -68,7 +60,6 @@ func (r *Repo) Create(ctx context.Context, event common.Event) (common.EventID, 
 		return event.ID, err
 	}
 
-	// Commit the transaction.
 	if err = tx.Commit(); err != nil {
 		return event.ID, err
 	}
@@ -76,8 +67,8 @@ func (r *Repo) Create(ctx context.Context, event common.Event) (common.EventID, 
 	return event.ID, nil
 }
 
-func (r *Repo) Update(ctx context.Context, id common.EventID, event common.Event) (common.EventID, error) {
-	tx, err := r.db.BeginTx(ctx, nil)
+func (store *Storage) Update(ctx context.Context, id common.EventID, event common.Event) (common.EventID, error) {
+	tx, err := store.db.BeginTx(ctx, nil)
 	if err != nil {
 		return id, err
 	}
@@ -99,21 +90,17 @@ func (r *Repo) Update(ctx context.Context, id common.EventID, event common.Event
 		return id, err
 	}
 	if notFound == 0 {
-		return id, ErrNotFound
+		return id, common.ErrNotFound
 	}
-
-	// Commit the transaction.
 	if err = tx.Commit(); err != nil {
 		return event.ID, err
 	}
-
 	return id, nil
 }
 
-func (r *Repo) Delete(ctx context.Context, id common.EventID) (common.EventID, error) {
+func (store *Storage) Delete(ctx context.Context, id common.EventID) (common.EventID, error) {
 	query := `DELETE FROM events WHERE id = $1`
-
-	result, err := r.db.ExecContext(ctx, query, id)
+	result, err := store.db.ExecContext(ctx, query, id)
 	if err != nil {
 		return id, err
 	}
@@ -122,16 +109,15 @@ func (r *Repo) Delete(ctx context.Context, id common.EventID) (common.EventID, e
 		return id, err
 	}
 	if notFound == 0 {
-		return id, ErrNotFound
+		return id, common.ErrNotFound
 	}
-
 	return id, nil
 }
 
-func (r *Repo) PeriodList(
+func (store *Storage) PeriodList(
 	ctx context.Context,
 	startPeriod time.Time,
-	period repository.Period,
+	period storage.Period,
 ) ([]common.Event, error) {
 	var endPeriod time.Time
 	switch period {
@@ -142,7 +128,7 @@ func (r *Repo) PeriodList(
 	case "Month":
 		endPeriod = startPeriod.AddDate(0, 1, 0)
 	}
-	tx, err := r.db.BeginTx(ctx, nil)
+	tx, err := store.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -178,26 +164,26 @@ func (r *Repo) PeriodList(
 	return events, rows.Err()
 }
 
-func (r *Repo) DayList(ctx context.Context, startDate time.Time) ([]common.Event, error) {
-	period := repository.Period("Day")
-	return r.PeriodList(ctx, startDate, period)
+func (store *Storage) DayList(ctx context.Context, startDate time.Time) ([]common.Event, error) {
+	period := storage.Period("Day")
+	return store.PeriodList(ctx, startDate, period)
 }
 
-func (r *Repo) WeekList(ctx context.Context, startDate time.Time) ([]common.Event, error) {
-	period := repository.Period("Week")
-	return r.PeriodList(ctx, startDate, period)
+func (store *Storage) WeekList(ctx context.Context, startDate time.Time) ([]common.Event, error) {
+	period := storage.Period("Week")
+	return store.PeriodList(ctx, startDate, period)
 }
 
-func (r *Repo) MonthList(ctx context.Context, startDate time.Time) ([]common.Event, error) {
-	period := repository.Period("Month")
-	return r.PeriodList(ctx, startDate, period)
+func (store *Storage) MonthList(ctx context.Context, startDate time.Time) ([]common.Event, error) {
+	period := storage.Period("Month")
+	return store.PeriodList(ctx, startDate, period)
 }
 
-func (r *Repo) ClearOldEvents(ctx context.Context) error {
+func (store *Storage) ClearOldEvents(ctx context.Context) error {
 	lastYearDate := time.Now().AddDate(-1, 0, 0)
 	query := `DELETE FROM events WHERE date_end < $1`
 
-	result, err := r.db.ExecContext(ctx, query, lastYearDate.Format("2006-01-02 15:04"))
+	result, err := store.db.ExecContext(ctx, query, lastYearDate.Format("2006-01-02 15:04"))
 	if err != nil {
 		return err
 	}
@@ -209,14 +195,14 @@ func (r *Repo) ClearOldEvents(ctx context.Context) error {
 	return nil
 }
 
-func (r *Repo) SchedulerList(ctx context.Context) ([]common.Notice, error) {
+func (store *Storage) SchedulerList(ctx context.Context) ([]common.Notice, error) {
 	var notices []common.Notice
 	query := `SELECT id, title, date_start, owner_id
 				FROM events
 				WHERE date_start > (now() - notify_in * interval '1 hour')
 				  AND date_start <= (now() + notify_in * interval '1 hour')`
 
-	rows, err := r.db.QueryContext(ctx, query)
+	rows, err := store.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}

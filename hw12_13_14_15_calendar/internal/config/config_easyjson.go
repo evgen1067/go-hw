@@ -4,7 +4,6 @@ package config
 
 import (
 	json "encoding/json"
-
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
@@ -180,7 +179,7 @@ func easyjson6615c02eDecode2(in *jlexer.Lexer, out *struct {
 	User     string `json:"user"`
 	Password string `json:"password"`
 	Database string `json:"database"`
-	SSLMode  bool   `json:"sslMode"`
+	SSLMode  string `json:"sslMode"`
 }) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
@@ -211,7 +210,7 @@ func easyjson6615c02eDecode2(in *jlexer.Lexer, out *struct {
 		case "database":
 			out.Database = string(in.String())
 		case "sslMode":
-			out.SSLMode = bool(in.Bool())
+			out.SSLMode = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -228,7 +227,7 @@ func easyjson6615c02eEncode2(out *jwriter.Writer, in struct {
 	User     string `json:"user"`
 	Password string `json:"password"`
 	Database string `json:"database"`
-	SSLMode  bool   `json:"sslMode"`
+	SSLMode  string `json:"sslMode"`
 }) {
 	out.RawByte('{')
 	first := true
@@ -261,7 +260,7 @@ func easyjson6615c02eEncode2(out *jwriter.Writer, in struct {
 	{
 		const prefix string = ",\"sslMode\":"
 		out.RawString(prefix)
-		out.Bool(bool(in.SSLMode))
+		out.String(string(in.SSLMode))
 	}
 	out.RawByte('}')
 }
@@ -321,8 +320,8 @@ func easyjson6615c02eEncode1(out *jwriter.Writer, in struct {
 	out.RawByte('}')
 }
 func easyjson6615c02eDecode(in *jlexer.Lexer, out *struct {
-	Level LoggerLevel `json:"level"`
-	File  string      `json:"file"`
+	Level string `json:"level"`
+	File  string `json:"file"`
 }) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
@@ -343,7 +342,7 @@ func easyjson6615c02eDecode(in *jlexer.Lexer, out *struct {
 		}
 		switch key {
 		case "level":
-			out.Level = LoggerLevel(in.String())
+			out.Level = string(in.String())
 		case "file":
 			out.File = string(in.String())
 		default:
@@ -357,8 +356,8 @@ func easyjson6615c02eDecode(in *jlexer.Lexer, out *struct {
 	}
 }
 func easyjson6615c02eEncode(out *jwriter.Writer, in struct {
-	Level LoggerLevel `json:"level"`
-	File  string      `json:"file"`
+	Level string `json:"level"`
+	File  string `json:"file"`
 }) {
 	out.RawByte('{')
 	first := true

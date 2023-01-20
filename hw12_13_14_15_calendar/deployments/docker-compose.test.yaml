@@ -62,62 +62,11 @@ services:
       postgres:
         condition: service_healthy
 
-  rabbit:
-    container_name: ${APP_NAME}_rabbit
-    image: rabbitmq
-    restart: unless-stopped
-    ports:
-      - "5672:5672"
-    networks:
-      - new
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-      interval: 30s
-      timeout: 30s
-      retries: 3
-
-  scheduler:
-    container_name: ${APP_NAME}_scheduler
-    build:
-      context: ..
-      dockerfile: ./build/scheduler/Dockerfile
-    restart: unless-stopped
-    command: --config /configs/test.json
-    volumes:
-      - "../configs:/configs"
-    networks:
-      - new
-    depends_on:
-      rabbit:
-        condition: service_healthy
-      postgres:
-        condition: service_healthy
-
-  sender:
-    container_name: ${APP_NAME}_sender
-    build:
-      context: ..
-      dockerfile: ./build/sender/Dockerfile
-    restart: unless-stopped
-    command: --config /configs/test.json
-    volumes:
-      - "../configs:/configs"
-    networks:
-      - new
-    depends_on:
-      rabbit:
-        condition: service_healthy
-
   integration_tests:
     container_name: ${APP_NAME}_tests
     build:
       context: ..
-      dockerfile: ./build/tests/Dockerfile
+      dockerfile: ./tests/Dockerfile
     depends_on:
-      - calendar
-      - scheduler
-      - sender
-
-
-
-
+      postgres:
+        condition: service_healthy

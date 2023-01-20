@@ -1,23 +1,22 @@
-package grpcapi
+package grpc
 
 import (
 	"context"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/service"
-	"log"
-	"net"
-	"testing"
-	"time"
-
 	"github.com/evgen1067/hw12_13_14_15_calendar/api"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/repository/memory"
-	data "github.com/evgen1067/hw12_13_14_15_calendar/internal/server/grpcapi/transformer"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/services"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/storage/memory"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
+	"log"
+	"net"
+	"testing"
+	"time"
 )
 
 func TestHandlers(t *testing.T) {
@@ -28,7 +27,7 @@ func TestHandlers(t *testing.T) {
 
 	dateStart := time.Now()
 
-	event := data.TransformEventToPb(common.Event{
+	event := TransformEventToPb(common.Event{
 		ID:          0,
 		Title:       "Title",
 		Description: "Description",
@@ -40,7 +39,7 @@ func TestHandlers(t *testing.T) {
 	createRequest := &api.CreateRequest{Event: event}
 	createRequests := make([]*api.CreateRequest, 0)
 	for i := 1; i < 10; i++ {
-		e := data.TransformEventToPb(common.Event{
+		e := TransformEventToPb(common.Event{
 			ID:          common.EventID(i),
 			Title:       "Title",
 			Description: "Description",
@@ -110,10 +109,13 @@ func server(ctx context.Context) (api.EventServiceClient, func()) {
 	buffer := 101024 * 1024
 	lis := bufconn.Listen(buffer)
 
-	cfg, _ := config.InitConfig("../../../configs/local.json")
-	repo := memory.NewRepo()
-	serv := service.NewServices(ctx, repo)
-	grpcSrv := InitGRPC(cfg, serv)
+	cfg, _ := config.Parse("../../../configs/local.json")
+	zLog, _ := logger.NewLogger(cfg)
+	store := memory.NewStorage()
+
+	services := services.NewServices(ctx, store, zLog)
+
+	grpcSrv := NewGRPC(services, cfg)
 
 	baseServer := grpc.NewServer()
 

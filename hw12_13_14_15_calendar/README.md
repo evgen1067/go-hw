@@ -4,39 +4,10 @@
 - [Домашнее задание №14 «Кроликизация Календаря»](./docs/14_README.md)
 - [Домашнее задание №15 «Докеризация и интеграционное тестирование Календаря»](./docs/15_README.md)
 
+#### Ветки при выполнении
+- `hw12_calendar` (от `master`) -> Merge Request в `master`
+- `hw13_calendar` (от `hw12_calendar`) -> Merge Request в `hw12_calendar` (если уже вмержена, то в `master`)
+- `hw14_calendar` (от `hw13_calendar`) -> Merge Request в `hw13_calendar` (если уже вмержена, то в `master`)
+- `hw15_calendar` (от `hw14_calendar`) -> Merge Request в `hw14_calendar` (если уже вмержена, то в `master`)
 
-Скомпилировать бинарный файл сервиса:
-
-    make build
-
-Собрать и запустить сервис с конфигом по умолчанию
-
-    make run
-
-Запустить юнит-тесты
-
-    make test
-
-Запустить golangci-lint
-
-    make lint
-
-Запуск Docker-контейнера
-
-    make up
-
-Отключение Docker-контейнера
-
-    make down
-
-Создание базы данных (только с включенным Docker-ом)
-
-    make create_db
-
-Применить миграции (только с включенным Docker-ом)
-    
-    make migrate_up
-
-Откатить миграции (только с включенным Docker-ом)
-
-    make migrate_down
+**Домашнее задание не принимается, если не принято ДЗ, предшедствующее ему.**

@@ -1,22 +1,11 @@
 package config
 
-import (
-	"os"
-)
-
-type LoggerLevel string
-
-const (
-	Error LoggerLevel = "error"
-	Warn  LoggerLevel = "warn"
-	Info  LoggerLevel = "info"
-	Debug LoggerLevel = "debug"
-)
+import "os"
 
 type Config struct {
 	Logger struct {
-		Level LoggerLevel `json:"level"`
-		File  string      `json:"file"`
+		Level string `json:"level"`
+		File  string `json:"file"`
 	} `json:"logger"`
 	HTTP struct {
 		Host string `json:"host"`
@@ -33,7 +22,7 @@ type Config struct {
 		User     string `json:"user"`
 		Password string `json:"password"`
 		Database string `json:"database"`
-		SSLMode  bool   `json:"sslMode"`
+		SSLMode  string `json:"sslMode"`
 	} `json:"db"`
 	AMQP struct {
 		URI   string `json:"uri"`
@@ -41,17 +30,16 @@ type Config struct {
 	} `json:"amqp"`
 }
 
-var Configuration = &Config{}
-
-func InitConfig(filePath string) (*Config, error) {
+func Parse(filePath string) (*Config, error) {
 	bytes, err := os.ReadFile(filePath)
 	if err != nil {
 		return nil, err
 	}
 
-	err = Configuration.UnmarshalJSON(bytes)
+	var cfg Config
+	err = cfg.UnmarshalJSON(bytes)
 	if err != nil {
 		return nil, err
 	}
-	return Configuration, nil
+	return &cfg, nil
 }

@@ -28,7 +28,7 @@ Feature: update event
 		"ownerId":     1
     }
     """
-    Then The response code should be 400
+    Then The response code should be 500
   Scenario: successful event update (the date of the event is already occupied, but the recipient is specified differently)
     When I send "PUT" request to "http://localhost:8888/events/1000" with "application/json" data:
     """

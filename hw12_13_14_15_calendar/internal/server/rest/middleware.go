@@ -1,12 +1,10 @@
-package httpapi
+package rest
 
 import (
 	"fmt"
 	"net"
 	"net/http"
 	"time"
-
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/logger"
 )
 
 type LoggingResponseWriter struct {
@@ -49,11 +47,11 @@ func loggerMiddleware(next http.Handler) http.Handler {
 
 		switch {
 		case lrw.statusCode < 300:
-			logger.Logger.Info(message)
+			s.Info(message)
 		case lrw.statusCode >= 300 && lrw.statusCode < 400:
-			logger.Logger.Warn(message)
+			s.Warn(message)
 		default:
-			logger.Logger.Error(message)
+			s.Error(message)
 		}
 	})
 }

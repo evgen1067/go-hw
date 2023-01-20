@@ -15,7 +15,7 @@ Feature: create event
 		"ownerId":     0
     }
     """
-    Then The response code should be 200
+    Then The response code should be 201
   Scenario: not successful event creation (the date of the event is already occupied)
     When I send "POST" request to "http://localhost:8888/events/new" with "application/json" data:
     """
@@ -28,7 +28,7 @@ Feature: create event
 		"ownerId":     0
     }
     """
-    Then The response code should be 400
+    Then The response code should be 500
   Scenario: successful event creation (the date of the event is already occupied, but the recipient is specified differently)
     When I send "POST" request to "http://localhost:8888/events/new" with "application/json" data:
     """
@@ -41,4 +41,4 @@ Feature: create event
 		"ownerId":     1
     }
     """
-    Then The response code should be 200
+    Then The response code should be 201

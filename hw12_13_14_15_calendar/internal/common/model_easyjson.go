@@ -4,6 +4,7 @@ package common
 
 import (
 	json "encoding/json"
+
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
@@ -17,7 +18,7 @@ var (
 	_ easyjson.Marshaler
 )
 
-func easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon(in *jlexer.Lexer, out *ResponseEventList) {
+func easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon(in *jlexer.Lexer, out *ResponseEventList) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -71,7 +72,7 @@ func easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon(in
 		in.Consumed()
 	}
 }
-func easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon(out *jwriter.Writer, in ResponseEventList) {
+func easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon(out *jwriter.Writer, in ResponseEventList) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -102,27 +103,27 @@ func easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon(ou
 // MarshalJSON supports json.Marshaler interface
 func (v ResponseEventList) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon(&w, v)
+	easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v ResponseEventList) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon(w, v)
+	easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *ResponseEventList) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon(&r, v)
+	easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *ResponseEventList) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon(l, v)
+	easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon(l, v)
 }
-func easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon1(in *jlexer.Lexer, out *ResponseEventID) {
+func easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon1(in *jlexer.Lexer, out *ResponseEventID) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -155,7 +156,7 @@ func easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon1(i
 		in.Consumed()
 	}
 }
-func easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon1(out *jwriter.Writer, in ResponseEventID) {
+func easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon1(out *jwriter.Writer, in ResponseEventID) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -175,27 +176,27 @@ func easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon1(o
 // MarshalJSON supports json.Marshaler interface
 func (v ResponseEventID) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon1(&w, v)
+	easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon1(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v ResponseEventID) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon1(w, v)
+	easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon1(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *ResponseEventID) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon1(&r, v)
+	easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon1(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *ResponseEventID) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon1(l, v)
+	easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon1(l, v)
 }
-func easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon2(in *jlexer.Lexer, out *Notice) {
+func easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon2(in *jlexer.Lexer, out *Notice) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -234,7 +235,7 @@ func easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon2(i
 		in.Consumed()
 	}
 }
-func easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon2(out *jwriter.Writer, in Notice) {
+func easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon2(out *jwriter.Writer, in Notice) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -264,27 +265,27 @@ func easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon2(o
 // MarshalJSON supports json.Marshaler interface
 func (v Notice) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon2(&w, v)
+	easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon2(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v Notice) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon2(w, v)
+	easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon2(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Notice) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon2(&r, v)
+	easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon2(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Notice) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon2(l, v)
+	easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon2(l, v)
 }
-func easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon3(in *jlexer.Lexer, out *Exception) {
+func easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon3(in *jlexer.Lexer, out *Exception) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -317,7 +318,7 @@ func easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon3(i
 		in.Consumed()
 	}
 }
-func easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon3(out *jwriter.Writer, in Exception) {
+func easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon3(out *jwriter.Writer, in Exception) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -337,27 +338,27 @@ func easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon3(o
 // MarshalJSON supports json.Marshaler interface
 func (v Exception) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon3(&w, v)
+	easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon3(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v Exception) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon3(w, v)
+	easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon3(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Exception) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon3(&r, v)
+	easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon3(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Exception) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon3(l, v)
+	easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon3(l, v)
 }
-func easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon4(in *jlexer.Lexer, out *Event) {
+func easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon4(in *jlexer.Lexer, out *Event) {
 	isTopLevel := in.IsStart()
 	if in.IsNull() {
 		if isTopLevel {
@@ -404,7 +405,7 @@ func easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon4(i
 		in.Consumed()
 	}
 }
-func easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon4(out *jwriter.Writer, in Event) {
+func easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon4(out *jwriter.Writer, in Event) {
 	out.RawByte('{')
 	first := true
 	_ = first
@@ -449,23 +450,23 @@ func easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon4(o
 // MarshalJSON supports json.Marshaler interface
 func (v Event) MarshalJSON() ([]byte, error) {
 	w := jwriter.Writer{}
-	easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon4(&w, v)
+	easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon4(&w, v)
 	return w.Buffer.BuildBytes(), w.Error
 }
 
 // MarshalEasyJSON supports easyjson.Marshaler interface
 func (v Event) MarshalEasyJSON(w *jwriter.Writer) {
-	easyjsonD2b7633eEncodeGithubComEvgen1067Hw12131415CalendarInternalCommon4(w, v)
+	easyjsonC80ae7adEncodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon4(w, v)
 }
 
 // UnmarshalJSON supports json.Unmarshaler interface
 func (v *Event) UnmarshalJSON(data []byte) error {
 	r := jlexer.Lexer{Data: data}
-	easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon4(&r, v)
+	easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon4(&r, v)
 	return r.Error()
 }
 
 // UnmarshalEasyJSON supports easyjson.Unmarshaler interface
 func (v *Event) UnmarshalEasyJSON(l *jlexer.Lexer) {
-	easyjsonD2b7633eDecodeGithubComEvgen1067Hw12131415CalendarInternalCommon4(l, v)
+	easyjsonC80ae7adDecodeGithubComFixmeMyFriendHw12131415CalendarInternalCommon4(l, v)
 }

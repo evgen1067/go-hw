@@ -1,11 +1,10 @@
-package transformer
+package grpc
 
 import (
-	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
-	"time"
-
 	"github.com/evgen1067/hw12_13_14_15_calendar/api"
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"time"
 )
 
 func TransformEventToPb(e common.Event) *api.Event {

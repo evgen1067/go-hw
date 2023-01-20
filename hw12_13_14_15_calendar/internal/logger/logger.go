@@ -5,43 +5,44 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/evgen1067/hw12_13_14_15_calendar/internal/common"
 	"github.com/evgen1067/hw12_13_14_15_calendar/internal/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-var Logger = &zap.Logger{}
+var defaultOutputPaths = []string{"out.log"}
 
-func InitLogger() error {
-	var (
-		defaultOutputPaths = []string{"out.log"}
-		err                error
-	)
+type Logger struct {
+	logger *zap.Logger
+}
+
+func NewLogger(cfg *config.Config) (*Logger, error) {
 	var level zap.AtomicLevel
-	switch config.Configuration.Logger.Level {
-	case config.Error:
+	switch cfg.Logger.Level {
+	case "error":
 		level = zap.NewAtomicLevelAt(zap.ErrorLevel)
-	case config.Warn:
+	case "warn":
 		level = zap.NewAtomicLevelAt(zap.WarnLevel)
-	case config.Info:
+	case "info":
 		level = zap.NewAtomicLevelAt(zap.InfoLevel)
-	case config.Debug:
+	case "debug":
 		level = zap.NewAtomicLevelAt(zap.DebugLevel)
 	default:
-		level = zap.NewAtomicLevelAt(zap.InfoLevel)
+		return nil, common.ErrUndefinedLoggerLevel
 	}
 
 	var file []string
-	if config.Configuration.Logger.File == "" {
+	if cfg.Logger.File == "" {
 		file = defaultOutputPaths
 	} else {
-		file = append(file, config.Configuration.Logger.File)
+		file = append(file, cfg.Logger.File)
 	}
 	pathDir := "logs"
 	if _, err := os.Stat(pathDir); os.IsNotExist(err) {
 		err := os.Mkdir(pathDir, os.ModePerm)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 	for i := range file {
@@ -49,27 +50,27 @@ func InitLogger() error {
 	}
 	file = append(file, "stdout")
 
-	cfg := zap.Config{
+	zapCfg := zap.Config{
 		Level:       level,
 		Encoding:    "console",
 		OutputPaths: file,
 		EncoderConfig: zapcore.EncoderConfig{
-			MessageKey:   "message",
-			LevelKey:     "level",
-			TimeKey:      "time",
-			CallerKey:    "caller",
-			EncodeLevel:  CustomEncodeLevel,
-			EncodeTime:   CustomEncodeTime,
-			EncodeCaller: zapcore.FullCallerEncoder,
+			MessageKey:  "message",
+			LevelKey:    "level",
+			TimeKey:     "time",
+			EncodeLevel: CustomEncodeLevel,
+			EncodeTime:  CustomEncodeTime,
 		},
 	}
 
-	Logger, err = cfg.Build()
+	zapLogger, err := zapCfg.Build()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &Logger{
+		logger: zapLogger,
+	}, nil
 }
 
 func CustomEncodeLevel(l zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
@@ -78,4 +79,20 @@ func CustomEncodeLevel(l zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
 
 func CustomEncodeTime(t time.Time, enc zapcore.PrimitiveArrayEncoder) {
 	enc.AppendString(t.Format("2/Jan/2006:15:04:05 -0700"))
+}
+
+func (l *Logger) Error(msg string, fields ...zap.Field) {
+	l.logger.Info(msg, fields...)
+}
+
+func (l *Logger) Warn(msg string, fields ...zap.Field) {
+	l.logger.Warn(msg, fields...)
+}
+
+func (l *Logger) Debug(msg string, fields ...zap.Field) {
+	l.logger.Debug(msg, fields...)
+}
+
+func (l *Logger) Info(msg string, fields ...zap.Field) {
+	l.logger.Info(msg, fields...)
 }

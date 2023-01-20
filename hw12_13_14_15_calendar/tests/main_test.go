@@ -1,10 +1,9 @@
-package scripts
+package tests
 
 import (
+	"github.com/cucumber/godog"
 	"os"
 	"testing"
-
-	"github.com/cucumber/godog"
 )
 
 func TestMain(m *testing.M) {
